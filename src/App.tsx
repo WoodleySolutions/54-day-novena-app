@@ -4,6 +4,7 @@ import { useNovenaState } from './hooks/useNovenaState';
 import { IntentionModal } from './components/modals/IntentionModal';
 import { PrayerModal } from './components/modals/PrayerModal';
 import { AppHeader } from './components/common/AppHeader';
+import { AppFooter } from './components/common/AppFooter';
 import { ProgressBar } from './components/common/ProgressBar';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
@@ -185,6 +186,8 @@ const NovenaTracker: React.FC = () => {
 
       {/* Debug component - only show in development */}
       <StorageDebug isVisible={process.env.NODE_ENV === 'development'} />
+      
+      <AppFooter />
     </div>
   );
 };
