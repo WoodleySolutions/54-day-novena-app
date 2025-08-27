@@ -7,6 +7,30 @@ export const CYCLES_PER_PHASE = 9;
 
 export const MYSTERY_ROTATION: MysteryType[] = ['Joyful', 'Sorrowful', 'Glorious'];
 
+export const ROSARY_MYSTERIES = {
+  'Joyful': [
+    'The Annunciation',
+    'The Visitation', 
+    'The Nativity',
+    'The Presentation',
+    'The Finding in the Temple'
+  ],
+  'Sorrowful': [
+    'The Agony in the Garden',
+    'The Scourging at the Pillar',
+    'The Crowning with Thorns', 
+    'The Carrying of the Cross',
+    'The Crucifixion'
+  ],
+  'Glorious': [
+    'The Resurrection',
+    'The Ascension',
+    'The Descent of the Holy Spirit',
+    'The Assumption',
+    'The Coronation of Mary'
+  ]
+} as const;
+
 export const MYSTERY_DESCRIPTIONS = {
   'Joyful': "snow white buds to remind thee of thy joys",
   'Sorrowful': "blood red roses to remind thee of the passion of thy divine Son, with Whom thou didst so fully partake of its bitterness",

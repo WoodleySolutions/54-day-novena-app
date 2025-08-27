@@ -1,14 +1,16 @@
 import React from 'react';
-import { Calendar, BookOpen, Clock } from 'lucide-react';
+import { Calendar, Heart } from 'lucide-react';
 import { useNovenaState } from './hooks/useNovenaState';
 import { IntentionModal } from './components/modals/IntentionModal';
+import { PrayerModal } from './components/modals/PrayerModal';
+import { AppHeader } from './components/common/AppHeader';
 import { ProgressBar } from './components/common/ProgressBar';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
+import { StorageDebug } from './components/common/StorageDebug';
 import { 
   getCurrentPhase, 
   getMysteryForDay, 
-  getCycleInfo, 
   calculateCompletionPercentage 
 } from './utils/novenaCalculations';
 import { getPhaseInfo } from './utils/phaseInfo';
@@ -21,27 +23,21 @@ const NovenaTracker: React.FC = () => {
     startDate,
     intention,
     showIntentionModal,
+    showPrayerModal,
     setIntention,
     markDayComplete,
     startNovena,
-    closeIntentionModal
+    closeIntentionModal,
+    openPrayerModal,
+    closePrayerModal,
+    completeTodaysPrayer
   } = useNovenaState();
 
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-      {/* Application Header */}
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <BookOpen className="w-8 h-8 text-indigo-600" />
-          <h1 className="text-3xl font-bold text-gray-800">54-Day Novena Tracker</h1>
-        </div>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Track your journey through 27 days of petition followed by 27 days of thanksgiving. 
-          Each day includes the rosary with additional prayers.
-        </p>
-      </div>
+      <AppHeader />
 
       {/* Progress Overview Section */}
       {startDate && (
@@ -63,6 +59,25 @@ const NovenaTracker: React.FC = () => {
               <p className="text-gray-600 italic">"{intention}"</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Pray Today's Novena Button */}
+      {startDate && (
+        <div className="text-center mb-6">
+          <button
+            onClick={openPrayerModal}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3 mx-auto"
+          >
+            <Heart className="w-6 h-6" />
+            Pray Today's Novena
+            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+              Day {currentDay}
+            </span>
+          </button>
+          <p className="text-sm text-gray-600 mt-2">
+            {getMysteryForDay(currentDay)} Mysteries • {getPhaseInfo(getCurrentPhase(currentDay)).title}
+          </p>
         </div>
       )}
 
@@ -148,51 +163,6 @@ const NovenaTracker: React.FC = () => {
             </div>
           </div>
 
-          {/* Today's Prayer Focus */}
-          <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-indigo-600" />
-              <h3 className="text-xl font-semibold text-gray-800">Today's Prayer Focus</h3>
-            </div>
-            
-            <div className="space-y-4">
-              {/* Daily Prayer Components */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-700 mb-2">Daily Prayers Include:</h4>
-                <ul className="text-gray-600 space-y-1">
-                  <li>• The Holy Rosary (5 decades)</li>
-                  <li>• Opening prayers to the Sacred Heart</li>
-                  <li>• Prayer for your specific intention</li>
-                  <li>• Closing prayers of trust and surrender</li>
-                </ul>
-              </div>
-              
-              {/* Current Day Information */}
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className={`rounded-lg p-4 border-2 ${getPhaseInfo(getCurrentPhase(currentDay)).color}`}>
-                  <h4 className="font-semibold mb-2">
-                    Current Phase: {getPhaseInfo(getCurrentPhase(currentDay)).title}
-                  </h4>
-                  <p className="text-sm">
-                    {getPhaseInfo(getCurrentPhase(currentDay)).description}
-                  </p>
-                </div>
-                
-                <div className={`rounded-lg p-4 border-2 ${getPhaseInfo(getCurrentPhase(currentDay)).color}`}>
-                  <h4 className="font-semibold mb-2">
-                    Today's Mysteries: {getMysteryForDay(currentDay)}
-                  </h4>
-                  <p className="text-sm">
-                    {(() => {
-                      const { cycle } = getCycleInfo(currentDay);
-                      const dayInCycle = ((currentDay - 1) % 3) + 1;
-                      return `Cycle ${cycle}, Day ${dayInCycle} of 3-day rotation`;
-                    })()}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
         </>
       )}
 
@@ -202,6 +172,19 @@ const NovenaTracker: React.FC = () => {
         onIntentionChange={setIntention}
         onClose={closeIntentionModal}
       />
+
+      <PrayerModal
+        isOpen={showPrayerModal}
+        currentDay={currentDay}
+        mystery={getMysteryForDay(currentDay)}
+        phase={getCurrentPhase(currentDay)}
+        intention={intention}
+        onClose={closePrayerModal}
+        onComplete={completeTodaysPrayer}
+      />
+
+      {/* Debug component - only show in development */}
+      <StorageDebug isVisible={process.env.NODE_ENV === 'development'} />
     </div>
   );
 };

@@ -14,7 +14,38 @@ export const getOpeningPrayer = (mystery: MysteryType, phase: NovenaPhase): stri
   return `${baseStart}, ${MYSTERY_DESCRIPTIONS[mystery]}${baseEnd}`;
 };
 
-export const getClosingPrayer = (phase: NovenaPhase): string => {
+export const getClosingPrayer = (phase: NovenaPhase, mystery?: MysteryType, intention?: string): string => {
+  const intentionText = intention || 'your request';
+  
+  if (mystery === 'Joyful') {
+    // Joyful: same base prayer for both phases
+    return phase === 'petition'
+      ? "Sweet Mother Mary, I offer thee this spiritual communion to bind my bouquets in a wreath to place upon thy brow. O my Mother! Look with favor upon my gift, and in thy love obtain for me my request."
+      : "Sweet Mother Mary, I offer thee this Spiritual Communion to bind my bouquets in a wreath to place upon thy brow in thanksgiving for my request which thou in thy love hast obtained for me.";
+  }
+  
+  if (mystery === 'Sorrowful') {
+    // Sorrowful: includes intention in both phases
+    return phase === 'petition'
+      ? `Sweet Mother Mary, I offer thee this spiritual communion to bind my bouquets in a wreath to place upon thy brow. O my Mother! Look with favor upon my gift, and in thy love obtain for me ${intentionText}.`
+      : `Sweet Mother Mary, I offer thee this Spiritual Communion to bind my bouquets in a wreath to place upon thy brow in thanksgiving for ${intentionText} which thou in thy love hast obtained for me.`;
+  }
+  
+  if (mystery === 'Glorious') {
+    // Glorious: includes intention in both phases, plus Hail Mary only in petition
+    const basePrayer = phase === 'petition'
+      ? `Sweet Mother Mary, I offer thee this spiritual communion to bind my bouquets in a wreath to place upon thy brow. O my Mother! Look with favor upon my gift, and in thy love obtain for me ${intentionText}.`
+      : `Sweet Mother Mary, I offer thee this Spiritual Communion to bind my bouquets in a wreath to place upon thy brow in thanksgiving for ${intentionText} which thou in thy love hast obtained for me.`;
+    
+    // Add Hail Mary only for petition phase
+    const hailMary = phase === 'petition' 
+      ? ' Hail Mary, full of grace, the Lord is with thee. Blessed art thou amongst women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.'
+      : '';
+    
+    return `${basePrayer}${hailMary}`;
+  }
+
+  // Fallback to base prayer
   return phase === 'petition'
     ? "Sweet Mother Mary, I offer thee this spiritual communion to bind my bouquets in a wreath to place upon thy brow. O my Mother! Look with favor upon my gift, and in thy love obtain for me my request."
     : "Sweet Mother Mary, I offer thee this Spiritual Communion to bind my bouquets in a wreath to place upon thy brow in thanksgiving for my request which thou in thy love hast obtained for me.";

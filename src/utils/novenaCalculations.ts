@@ -34,3 +34,14 @@ export const getMysteryColor = (mystery: MysteryType): string => {
 export const calculateCompletionPercentage = (completedDays: Set<number>, totalDays: number): number => {
   return Math.round((completedDays.size / totalDays) * 100);
 };
+
+export const getCurrentDayToPray = (completedDays: Set<number>, totalDays: number): number => {
+  // Find the first day that hasn't been completed yet
+  for (let day = 1; day <= totalDays; day++) {
+    if (!completedDays.has(day)) {
+      return day;
+    }
+  }
+  // If all days are completed, return the last day
+  return totalDays;
+};

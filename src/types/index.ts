@@ -22,3 +22,10 @@ export interface NovenaState {
   intention: string;
   showIntentionModal: boolean;
 }
+
+export interface StorageState {
+  currentDay: number;
+  completedDays: number[];
+  startDate: string | null;
+  intention: string;
+}
