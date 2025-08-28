@@ -41,7 +41,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
       content: [
         `Today you are praying the ${mystery} Mysteries during your ${phase} phase.`,
         intention ? `Your intention: "${intention}"` : 'Remember to hold your intention in your heart.',
-        'Begin by making the Sign of the Cross and saying the Apostles\' Creed.'
+        'Begin by making the Sign of the Cross.'
       ],
       type: 'instruction'
     },

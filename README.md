@@ -1,46 +1,140 @@
-# Getting Started with Create React App
+# 54-Day Novena Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A comprehensive Catholic prayer application for tracking and guiding through the traditional 54-Day Rosary Novena to the Blessed Virgin Mary.
+
+## Overview
+
+The 54-Day Novena Tracker helps Catholics complete the powerful devotion popularized by Fortuna Agrelli in 1884. The novena consists of 27 days of petition followed by 27 days of thanksgiving, with step-by-step prayer guidance through all five sets of rosary mysteries.
+
+## Features
+
+### Core Functionality
+- **Day-by-day progress tracking** with visual progress indicators
+- **Interactive prayer modal** with step-by-step rosary guidance
+- **Automatic mystery rotation** through Joyful, Sorrowful, Glorious, and Luminous mysteries
+- **Personal intention setting** integrated into prayer flow
+- **Data persistence** across browser sessions using localStorage
+
+### Prayer Experience
+- Complete rosary structure from opening prayers to closing prayers
+- Individual decade guidance with mystery meditation
+- Traditional Catholic prayers including Hail Holy Queen and Rosary Prayer
+- Phase-specific closing prayers adapted for petition vs thanksgiving periods
+- Consolidated prayer steps for smooth workflow
+
+### Educational Content
+- Historical context about the 54-Day Novena tradition
+- Information about Fortuna Agrelli and the devotion's origins
+- Learn More modal accessible from the header
+
+### Technical Features
+- **Responsive design** built with React and Tailwind CSS
+- **TypeScript** for type safety and better development experience
+- **Modular architecture** with custom hooks and reusable components
+- **SEO optimized** with comprehensive meta tags and Open Graph support
+- **PWA ready** with manifest and service worker support
+
+## Live Application
+
+Visit the live application at: **https://54dayrosary.com**
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone [repository-url]
+cd 54-day-novena-app
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm start
+```
+
+The application will open at `http://localhost:3000`
 
 ## Available Scripts
 
-In the project directory, you can run:
-
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Runs the app in development mode at http://localhost:3000
 
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in interactive watch mode
 
 ### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Builds the app for production to the `build` folder with optimized performance
 
 ### `npm run eject`
+**Note: This is a one-way operation!** Ejects from Create React App setup
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Project Structure
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+src/
+├── components/          # Reusable UI components
+│   ├── common/         # Shared components (Header, Footer, etc.)
+│   ├── modals/         # Modal components (Prayer, LearnMore, etc.)
+│   └── NovenaTracker/  # Core tracker components
+├── hooks/              # Custom React hooks
+├── utils/              # Utility functions and helpers
+├── types/              # TypeScript type definitions
+└── constants/          # Application constants
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Architecture Highlights
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### State Management
+- Custom `useNovenaState` hook for centralized state management
+- localStorage integration with error handling and data validation
+- Computed properties for current day calculations
 
-## Learn More
+### Component Design
+- Modular, reusable components following React best practices
+- TypeScript interfaces for type safety
+- Separation of concerns between UI and business logic
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Prayer System
+- Step-by-step modal workflow for complete rosary guidance
+- Dynamic prayer generation based on mystery type and novena phase
+- Traditional Catholic prayer structure with proper sequencing
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Deployment
+
+The application is deployed on Netlify with:
+- Custom domain (54dayrosary.com)
+- HTTPS/SSL certification
+- Optimized build artifacts
+- Social media sharing support
+
+## Technical Specifications
+
+- **Framework**: React 18 with TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Build Tool**: Create React App
+- **Hosting**: Netlify
+- **Domain**: 54dayrosary.com
+
+## Contributing
+
+This is a faith-based project developed by Woodley Solutions. Traditional prayers are in the public domain.
+
+## License
+
+© 2025 Woodley Solutions. All rights reserved.
+Traditional prayers are in the public domain.
+
+---
+
+*Developed with devotion by [Woodley Solutions](https://woodleysolutions.com)*
