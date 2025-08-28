@@ -126,9 +126,22 @@ The application is deployed on Netlify with:
 - **Hosting**: Netlify
 - **Domain**: 54dayrosary.com
 
+## Feedback and Support
+
+Have feedback, suggestions, or need support? We'd love to hear from you!
+
+📧 **Email**: [tyler.woodleysolutions@gmail.com](mailto:tyler.woodleysolutions@gmail.com?subject=54-Day%20Novena%20Tracker%20Feedback)
+
+You can also use the "Contact us" link in the app footer for quick feedback.
+
 ## Contributing
 
 This is a faith-based project developed by Woodley Solutions. Traditional prayers are in the public domain.
+
+### Development Workflow
+- **CI/CD**: Automated testing and deployment via GitHub Actions
+- **Dependencies**: Automated updates via Dependabot
+- **Issues**: Use GitHub issue templates for bug reports and feature requests
 
 ## License
 
