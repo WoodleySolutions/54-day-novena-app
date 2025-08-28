@@ -11,6 +11,15 @@ export const AppFooter: React.FC = () => {
           <span className="font-semibold text-gray-800">Woodley Solutions</span>
         </p>
         <p className="text-gray-500 text-xs">
+          Have feedback or suggestions?{' '}
+          <a 
+            href="mailto:tyler.woodleysolutions@gmail.com?subject=54-Day Novena Tracker Feedback" 
+            className="text-indigo-600 hover:text-indigo-800 underline transition-colors"
+          >
+            Contact us
+          </a>
+        </p>
+        <p className="text-gray-500 text-xs">
           © {currentYear} Woodley Solutions. All rights reserved.
         </p>
         <p className="text-gray-400 text-xs italic">
