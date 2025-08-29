@@ -12,9 +12,9 @@ const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 
 // Initialize Google Analytics
 export const initGA = (): void => {
-  // Only initialize if tracking ID is provided
-  if (!GA_TRACKING_ID) {
-    console.log('Google Analytics: No tracking ID provided, analytics disabled');
+  // Only initialize if tracking ID is provided and in production
+  if (!GA_TRACKING_ID || process.env.NODE_ENV !== 'production') {
+    console.log('Google Analytics: Disabled in development or no tracking ID provided');
     return;
   }
 
@@ -46,7 +46,7 @@ export const initGA = (): void => {
 
 // Track page views
 export const trackPageView = (path: string): void => {
-  if (!GA_TRACKING_ID || typeof window.gtag !== 'function') {
+  if (!GA_TRACKING_ID || process.env.NODE_ENV !== 'production' || typeof window.gtag !== 'function') {
     return;
   }
 
@@ -64,7 +64,7 @@ export const trackEvent = (
   eventLabel?: string,
   value?: number
 ): void => {
-  if (!GA_TRACKING_ID || typeof window.gtag !== 'function') {
+  if (!GA_TRACKING_ID || process.env.NODE_ENV !== 'production' || typeof window.gtag !== 'function') {
     return;
   }
 
@@ -77,6 +77,10 @@ export const trackEvent = (
 
 // Track novena-specific events
 export const trackNovenaEvent = (action: string, additionalData?: Record<string, any>): void => {
+  if (!GA_TRACKING_ID || process.env.NODE_ENV !== 'production' || typeof window.gtag !== 'function') {
+    return;
+  }
+  
   trackEvent(action, 'novena', undefined, undefined);
   
   // Send additional data if provided
@@ -115,5 +119,5 @@ export const analytics = {
 
 // Check if analytics is enabled
 export const isAnalyticsEnabled = (): boolean => {
-  return !!GA_TRACKING_ID;
+  return !!GA_TRACKING_ID && process.env.NODE_ENV === 'production';
 };
