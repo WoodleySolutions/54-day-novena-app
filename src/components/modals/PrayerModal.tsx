@@ -3,6 +3,8 @@ import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { MysteryType, NovenaPhase } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES } from '../../constants/novena';
+import { ExpandablePrayer } from '../common/ExpandablePrayer';
+import { getPrayerText } from '../../constants/commonPrayers';
 
 interface PrayerModalProps {
   isOpen: boolean;
@@ -162,17 +164,61 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
     if (Array.isArray(content)) {
       return (
         <div className="space-y-3">
-          {content.map((line, index) => (
-            <p key={index} className={`
-              ${type === 'instruction' ? 'text-gray-700' : 'text-gray-800'}
-              ${line.startsWith('•') ? 'ml-4' : ''}
-              ${line === '' ? 'h-2' : ''}
-            `}>
-              {line}
-            </p>
-          ))}
+          {content.map((line, index) => {
+            // Check if this line mentions a prayer name that we have expandable content for
+            if (line.startsWith('•') && type === 'instruction') {
+              const prayerName = line.replace('•', '').trim();
+              const prayerText = getPrayerText(prayerName);
+              
+              if (prayerText) {
+                return (
+                  <div key={index} className="ml-4">
+                    <ExpandablePrayer
+                      prayerName={prayerName}
+                      prayerText={prayerText}
+                      className="mb-2"
+                    />
+                  </div>
+                );
+              }
+            }
+            
+            return (
+              <p key={index} className={`
+                ${type === 'instruction' ? 'text-gray-700' : 'text-gray-800'}
+                ${line.startsWith('•') ? 'ml-4' : ''}
+                ${line === '' ? 'h-2' : ''}
+              `}>
+                {line}
+              </p>
+            );
+          })}
         </div>
       );
+    }
+
+    // Handle single prayer content - check if it's a known prayer
+    if (type === 'prayer') {
+      const prayerText = content as string;
+      
+      // Check if this is a known prayer by looking for common patterns
+      if (prayerText.includes('Hail, Holy Queen') || prayerText.includes('Mother of Mercy')) {
+        return (
+          <ExpandablePrayer
+            prayerName="Hail Holy Queen"
+            prayerText={prayerText}
+          />
+        );
+      }
+      
+      if (prayerText.includes('only-begotten Son') || prayerText.includes('Most Holy Rosary')) {
+        return (
+          <ExpandablePrayer
+            prayerName="Rosary Prayer"
+            prayerText={prayerText}
+          />
+        );
+      }
     }
 
     return (
