@@ -49,7 +49,6 @@ const NovenaTracker: React.FC = () => {
   };
 
   const handleOpenPrayerModal = () => {
-    const phase = getCurrentPhase(currentDay);
     const mystery = getMysteryForDay(currentDay);
     openPrayerModal();
     analytics.prayerModalOpened(currentDay, mystery);
@@ -57,7 +56,6 @@ const NovenaTracker: React.FC = () => {
 
   const handleDayComplete = (dayNumber: number) => {
     const phase = getCurrentPhase(dayNumber);
-    const mystery = getMysteryForDay(dayNumber);
     markDayComplete(dayNumber);
     analytics.dayCompleted(dayNumber, phase);
     
@@ -68,7 +66,6 @@ const NovenaTracker: React.FC = () => {
   };
 
   const handlePrayerComplete = () => {
-    const phase = getCurrentPhase(currentDay);
     const mystery = getMysteryForDay(currentDay);
     completeTodaysPrayer();
     analytics.prayerCompleted(currentDay, mystery);

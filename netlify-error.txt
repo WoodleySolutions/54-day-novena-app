@@ -1,0 +1,93 @@
+The Netlify deploy errored, with the following guidance provided:
+
+**Diagnosis:**
+The build failed due to errors treated as warnings in the ESLint configuration, specifically related to unused variables in `src/App.tsx`.
+
+**Solution:**
+1. Open the file `src/App.tsx` in your project.
+2. Address the unused variables at the mentioned lines (52, 60, and 71).
+3. You can either remove the variables or use them in your code.
+4. After resolving the issues, commit the changes to your repository and trigger a new build.
+
+The relevant error logs are:
+
+Line 0: build-image version: 24a1153d2167e2fd2b97bf41bcef5782eb23901a (noble)
+Line 1: buildbot version: e003b962686ea5d1e068eb508ce90ec3003c9b2b
+Line 2: Fetching cached dependencies
+Line 3: Failed to fetch cache, continuing with build
+Line 4: Starting to prepare the repo for build
+Line 5: No cached dependencies found. Cloning fresh repo
+Line 6: git clone --filter=blob:none https://github.com/WoodleySolutions/54-day-novena-app
+Line 7: Preparing Git Reference refs/heads/master
+Line 8: Starting to install dependencies
+Line 9: Downloading and installing node v22.19.0...
+Line 10: Downloading https://nodejs.org/dist/v22.19.0/node-v22.19.0-linux-x64.tar.xz...
+Line 11: Computing checksum with sha256sum
+Line 12: Checksums matched!
+Line 13: Now using node v22.19.0 (npm v10.9.3)
+Line 24: npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+Line 25: npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated glob@7.2.3: Glo
+Line 26: npm warn deprecated stable@0.1.8: Modern JS already guarantees Array#sort() is a stable sort, so this library is deprecated. See
+Line 27: npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn depreca
+Line 28: npm warn deprecated rollup-plugin-terser@7.0.2: This package has been deprecated and is no longer maintained. Please use @rollup
+Line 29: npm warn deprecated q@1.5.1: You or someone you depend on is using Q, the JavaScript Promise library that gave JavaScript develo
+Line 30: npm warn deprecated
+Line 31: npm warn deprecated (For a CapTP with native promises, see @endo/eventual-send and @endo/captp)
+Line 32: npm warn deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
+Line 33: npm warn deprecated workbox-google-analytics@6.6.0: It is not compatible with newer versions of GA starting with v4, as long as 
+Line 34: npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated @humanwhocodes/objec
+Line 35: npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+Line 36: npm warn deprecated @babel/plugin-proposal-numeric-separator@7.18.6: This proposal has been merged to the ECMAScript standard an
+Line 37: npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript s
+Line 38: npm warn deprecated @babel/plugin-proposal-private-methods@7.18.6: This proposal has been merged to the ECMAScript standard and 
+Line 39: npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and
+Line 40: npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard an
+Line 41: npm warn deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+Line 42: npm warn deprecated @babel/plugin-proposal-private-property-in-object@7.21.11: This proposal has been merged to the ECMAScript s
+Line 43: npm warn deprecated source-map@0.8.0-beta.0: The work that was done in this beta branch won't be included in future versions
+npm
+Line 44: added 1343 packages in 10s
+Line 71:   production
+Line 72: [96m[1m​[22m[39m
+Line 73: [96m[1mBuild command from Netlify app                                [22m[39m
+Line 74: [96m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 75: ​
+Line 76: [36m$ npm run build[39m
+Line 77: > 54-day-novena-app@0.1.0 build
+Line 78: > react-scripts build
+Line 79: Creating an optimized production build...
+Line 80: [33m[39m
+Line 81: [33mTreating warnings as errors because process.env.CI = true.[39m
+Line 82: [33mMost CI servers set it automatically.[39m
+Line 83: [33m[39m
+Line 84: [31mFailed to compile.[39m
+Line 85: [31m[39m
+Line 86: [eslint]
+Line 87: src/App.tsx
+Line 88:   [1mLine 52:11:[22m  'phase' is assigned a value but never used    [33m[4m@typescript-eslint/no-unused-vars[24m[39m
+Line 89:   [1mLine 60:11:[22m  'mystery' is assigned a value but never used  [33m[4m@typescript-eslint/no-unused-vars[24m[39m
+Line 90:   [1mLine 71:11:[22m  'phase' is assigned a value but never used    [33m[4m@typescript-eslint/no-unused-vars[24m[39m
+Line 91: [91m[1m​[22m[39m
+Line 92: [91m[1m"build.command" failed                                        [22m[39m
+Line 93: [91m[1m────────────────────────────────────────────────────────────────[22m[39m
+Line 94: ​
+Line 95:   [31m[1mError message[22m[39m
+Line 96:   Command failed with exit code 1: npm run build
+Line 97: ​
+Line 98:   [31m[1mError location[22m[39m
+Line 99:   In Build command from Netlify app:
+Line 100:   npm run build
+Line 101: ​
+Line 102:   [31m[1mResolved config[22m[39m
+Line 103:   build:
+Line 104:     command: npm run build
+Line 105:     commandOrigin: ui
+Line 106:     publish: /opt/build/repo/build
+Line 107:     publishOrigin: ui
+Line 108: Failed during stage 'building site': Build script returned non-zero exit code: 2
+Line 109: Build failed due to a user error: Build script returned non-zero exit code: 2
+Line 110: Failing build: Failed to build site
+Line 111: Finished processing build request in 33.951s
