@@ -95,7 +95,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
         '• 1 Our Father',
         '• 10 Hail Marys (while meditating on this mystery)',
         '• 1 Glory Be',
-        '• The Fatima Prayer: "O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to Heaven, especially those most in need of Thy mercy."',
+        '• Fatima Prayer',
         '',
         'Then pray:',
         `"${decadePrayers[index]}"`
@@ -197,12 +197,16 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
       );
     }
 
-    // Handle single prayer content - check if it's a known prayer
+    // Handle single prayer content - check if it's a known prayer (but exclude opening prayer)
     if (type === 'prayer') {
       const prayerText = content as string;
       
-      // Check if this is a known prayer by looking for common patterns
-      if (prayerText.includes('Hail, Holy Queen') || prayerText.includes('Mother of Mercy')) {
+      // Skip expandable for opening prayer (contains 54-day novena specific content)
+      if (prayerText.includes('Sweet Mother Mary') || prayerText.includes('offer thee this')) {
+        // This is the opening prayer - don't make it expandable
+      }
+      // Check for traditional prayers that should be expandable
+      else if (prayerText.includes('Hail, Holy Queen') || prayerText.includes('Mother of Mercy')) {
         return (
           <ExpandablePrayer
             prayerName="Hail Holy Queen"
@@ -210,8 +214,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
           />
         );
       }
-      
-      if (prayerText.includes('only-begotten Son') || prayerText.includes('Most Holy Rosary')) {
+      else if (prayerText.includes('only-begotten Son') || prayerText.includes('Most Holy Rosary')) {
         return (
           <ExpandablePrayer
             prayerName="Rosary Prayer"
