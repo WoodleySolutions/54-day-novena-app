@@ -1,4 +1,5 @@
 import React from 'react';
+import { analytics } from '../../utils/analytics';
 
 interface IntentionModalProps {
   isOpen: boolean;
@@ -13,6 +14,13 @@ export const IntentionModal: React.FC<IntentionModalProps> = ({
   onIntentionChange,
   onClose
 }) => {
+  const handleSave = () => {
+    if (intention.trim()) {
+      analytics.intentionSet();
+    }
+    onClose();
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -31,7 +39,7 @@ export const IntentionModal: React.FC<IntentionModalProps> = ({
         />
         <div className="flex gap-3">
           <button
-            onClick={onClose}
+            onClick={handleSave}
             className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-semibold transition-colors"
           >
             Begin Novena

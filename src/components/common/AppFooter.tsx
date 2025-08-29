@@ -1,4 +1,5 @@
 import React from 'react';
+import { analytics } from '../../utils/analytics';
 
 export const AppFooter: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -15,6 +16,7 @@ export const AppFooter: React.FC = () => {
           <a 
             href="mailto:tyler.woodleysolutions@gmail.com?subject=54-Day Novena Tracker Feedback" 
             className="text-indigo-600 hover:text-indigo-800 underline transition-colors"
+            onClick={() => analytics.feedbackLinkClicked()}
           >
             Contact us
           </a>

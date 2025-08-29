@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { BookOpen, Info } from 'lucide-react';
 import { LearnMoreModal } from '../modals/LearnMoreModal';
+import { analytics } from '../../utils/analytics';
 
 export const AppHeader: React.FC = () => {
   const [showLearnMore, setShowLearnMore] = useState(false);
+
+  const handleLearnMoreClick = () => {
+    setShowLearnMore(true);
+    analytics.learnMoreOpened();
+  };
 
   return (
     <>
@@ -12,7 +18,7 @@ export const AppHeader: React.FC = () => {
           <BookOpen className="w-8 h-8 text-indigo-600" />
           <h1 className="text-3xl font-bold text-gray-800">54-Day Novena Tracker</h1>
           <button
-            onClick={() => setShowLearnMore(true)}
+            onClick={handleLearnMoreClick}
             className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors"
             title="Learn about the 54-Day Novena"
           >

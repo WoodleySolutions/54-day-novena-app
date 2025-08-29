@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Calendar, Heart } from 'lucide-react';
 import { useNovenaState } from './hooks/useNovenaState';
 import { IntentionModal } from './components/modals/IntentionModal';
@@ -8,6 +8,7 @@ import { AppFooter } from './components/common/AppFooter';
 import { ProgressBar } from './components/common/ProgressBar';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
+import { initGA, analytics } from './utils/analytics';
 import { StorageDebug } from './components/common/StorageDebug';
 import { 
   getCurrentPhase, 
@@ -34,7 +35,44 @@ const NovenaTracker: React.FC = () => {
     completeTodaysPrayer
   } = useNovenaState();
 
+  // Initialize Google Analytics on component mount
+  useEffect(() => {
+    initGA();
+  }, []);
+
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
+
+  // Enhanced handlers with analytics tracking
+  const handleStartNovena = () => {
+    startNovena();
+    analytics.novenaStarted();
+  };
+
+  const handleOpenPrayerModal = () => {
+    const phase = getCurrentPhase(currentDay);
+    const mystery = getMysteryForDay(currentDay);
+    openPrayerModal();
+    analytics.prayerModalOpened(currentDay, mystery);
+  };
+
+  const handleDayComplete = (dayNumber: number) => {
+    const phase = getCurrentPhase(dayNumber);
+    const mystery = getMysteryForDay(dayNumber);
+    markDayComplete(dayNumber);
+    analytics.dayCompleted(dayNumber, phase);
+    
+    // Check if novena is completed
+    if (completedDays.size + 1 === TOTAL_DAYS) {
+      analytics.novenaCompleted();
+    }
+  };
+
+  const handlePrayerComplete = () => {
+    const phase = getCurrentPhase(currentDay);
+    const mystery = getMysteryForDay(currentDay);
+    completeTodaysPrayer();
+    analytics.prayerCompleted(currentDay, mystery);
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -67,7 +105,7 @@ const NovenaTracker: React.FC = () => {
       {startDate && (
         <div className="text-center mb-6">
           <button
-            onClick={openPrayerModal}
+            onClick={handleOpenPrayerModal}
             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3 mx-auto"
           >
             <Heart className="w-6 h-6" />
@@ -93,7 +131,7 @@ const NovenaTracker: React.FC = () => {
             begin tracking your daily progress through both phases of this powerful novena.
           </p>
           <button 
-            onClick={startNovena}
+            onClick={handleStartNovena}
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
           >
             Start Novena
@@ -150,7 +188,7 @@ const NovenaTracker: React.FC = () => {
                                   day={day}
                                   mystery={MYSTERY_ROTATION[dayIndex]}
                                   isCompleted={completedDays.has(day)}
-                                  onClick={markDayComplete}
+                                  onClick={handleDayComplete}
                                 />
                               ))}
                             </div>
@@ -181,7 +219,7 @@ const NovenaTracker: React.FC = () => {
         phase={getCurrentPhase(currentDay)}
         intention={intention}
         onClose={closePrayerModal}
-        onComplete={completeTodaysPrayer}
+        onComplete={handlePrayerComplete}
       />
 
       {/* Debug component - only show in development */}

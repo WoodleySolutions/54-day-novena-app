@@ -33,6 +33,8 @@ The 54-Day Novena Tracker helps Catholics complete the powerful devotion popular
 - **Modular architecture** with custom hooks and reusable components
 - **SEO optimized** with comprehensive meta tags and Open Graph support
 - **PWA ready** with manifest and service worker support
+- **Google Analytics 4** integration with privacy-focused tracking
+- **Environment-based configuration** for secure API key management
 
 ## Live Application
 
@@ -48,7 +50,7 @@ Visit the live application at: **https://54dayrosary.com**
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
+git clone https://github.com/WoodleySolutions/54-day-novena-app.git
 cd 54-day-novena-app
 ```
 
@@ -57,12 +59,29 @@ cd 54-day-novena-app
 npm install
 ```
 
-3. Start the development server:
+3. Configure environment variables (optional):
+```bash
+# Copy the example environment file
+cp .env.example .env.local
+
+# Edit .env.local and add your Google Analytics tracking ID
+REACT_APP_GA_TRACKING_ID=G-XXXXXXXXXX
+```
+
+4. Start the development server:
 ```bash
 npm start
 ```
 
 The application will open at `http://localhost:3000`
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `REACT_APP_GA_TRACKING_ID` | Google Analytics 4 tracking ID | No |
+
+**Note**: Analytics are disabled if no tracking ID is provided. The app functions fully without analytics.
 
 ## Available Scripts
 
