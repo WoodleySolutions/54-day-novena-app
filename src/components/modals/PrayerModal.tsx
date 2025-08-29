@@ -202,11 +202,11 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
       const prayerText = content as string;
       
       // Skip expandable for opening prayer (contains 54-day novena specific content)
-      if (prayerText.includes('Sweet Mother Mary') || prayerText.includes('offer thee this')) {
-        // This is the opening prayer - don't make it expandable
+      if (prayerText.includes('Crown of Roses') || prayerText.includes('dispenser of God\'s graces') || prayerText.includes('Queen of the Most Holy Rosary')) {
+        // This is the 54-day novena opening prayer - don't make it expandable
       }
       // Check for traditional prayers that should be expandable
-      else if (prayerText.includes('Hail, Holy Queen') || prayerText.includes('Mother of Mercy')) {
+      else if (prayerText.includes('Hail, Holy Queen') && prayerText.includes('Mother of Mercy')) {
         return (
           <ExpandablePrayer
             prayerName="Hail Holy Queen"
