@@ -1,0 +1,6 @@
+Chrome dev tools console: 
+analytics.ts:17 Google Analytics: No tracking ID provided, analytics disabled
+
+Env Variable:
+Key: REACT_APP_GA_TRACKING_ID
+Value: G-NBNBDSTW1N

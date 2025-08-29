@@ -10,6 +10,11 @@ declare global {
 // Get the tracking ID from environment variable
 const GA_TRACKING_ID = process.env.REACT_APP_GA_TRACKING_ID;
 
+// Debug logging
+console.log('GA Debug - All REACT_APP env vars:', Object.keys(process.env).filter(key => key.startsWith('REACT_APP_')));
+console.log('GA Debug - Tracking ID:', GA_TRACKING_ID);
+console.log('GA Debug - Tracking ID type:', typeof GA_TRACKING_ID);
+
 // Initialize Google Analytics
 export const initGA = (): void => {
   // Only initialize if tracking ID is provided
