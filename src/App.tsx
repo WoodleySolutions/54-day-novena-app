@@ -6,6 +6,7 @@ import { PrayerModal } from './components/modals/PrayerModal';
 import { AppHeader } from './components/common/AppHeader';
 import { AppFooter } from './components/common/AppFooter';
 import { ProgressBar } from './components/common/ProgressBar';
+import { NotificationSetup } from './components/common/NotificationSetup';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
 import { initGA, analytics } from './utils/analytics';
@@ -74,6 +75,9 @@ const NovenaTracker: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <AppHeader />
+
+      {/* Notification Setup */}
+      {startDate && <NotificationSetup />}
 
       {/* Progress Overview Section */}
       {startDate && (

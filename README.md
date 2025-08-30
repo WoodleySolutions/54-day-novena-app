@@ -32,13 +32,20 @@ The 54-Day Novena Tracker helps Catholics complete the powerful devotion popular
 - **TypeScript** for type safety and better development experience
 - **Modular architecture** with custom hooks and reusable components
 - **SEO optimized** with comprehensive meta tags and Open Graph support
-- **PWA ready** with manifest and service worker support
+- **Progressive Web App (PWA)** with offline functionality and app installation
+- **Push notifications** for daily prayer reminders
 - **Google Analytics 4** integration with privacy-focused tracking
 - **Environment-based configuration** for secure API key management
 
 ## Live Application
 
 Visit the live application at: **https://54dayrosary.com**
+
+### Mobile App Features
+- **Install as PWA**: Add to home screen on mobile devices for native app experience
+- **Offline functionality**: Works without internet connection once cached
+- **Push notifications**: Daily prayer reminders (requires permission)
+- **Android App Store**: Coming soon via Google Play Store
 
 ## Getting Started
 
