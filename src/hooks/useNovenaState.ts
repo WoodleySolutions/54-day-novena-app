@@ -71,6 +71,16 @@ export const useNovenaState = () => {
     setShowPrayerModal(false);
   }, [currentDay, markDayComplete]);
 
+  const clearAllData = useCallback(() => {
+    setCompletedDays(new Set<number>());
+    setStartDate(null);
+    setIntention('');
+    setShowIntentionModal(false);
+    setShowPrayerModal(false);
+    // Clear localStorage
+    localStorage.removeItem('novena-data');
+  }, []);
+
   // Persist state changes to localStorage
   useEffect(() => {
     // Only save if we have a started novena (prevents saving initial empty state)
@@ -110,6 +120,7 @@ export const useNovenaState = () => {
     closeIntentionModal,
     openPrayerModal,
     closePrayerModal,
-    completeTodaysPrayer
+    completeTodaysPrayer,
+    clearAllData
   };
 };
