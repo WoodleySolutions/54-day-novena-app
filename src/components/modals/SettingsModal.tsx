@@ -149,27 +149,15 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
               
               <div className="pl-8">
-                <div className="flex flex-wrap gap-2">
-                  {[3, 5, 10, 15].map((amount) => (
-                    <a
-                      key={amount}
-                      href="https://ko-fi.com/woodleysolutions"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-pink-200 hover:border-pink-300"
-                    >
-                      ${amount}
-                    </a>
-                  ))}
-                  <a
-                    href="https://ko-fi.com/woodleysolutions"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-                  >
-                    Other Amount
-                  </a>
-                </div>
+                <a
+                  href="https://ko-fi.com/woodleysolutions"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  <Heart className="w-4 h-4" />
+                  Support on Ko-fi
+                </a>
               </div>
             </div>
           </div>
