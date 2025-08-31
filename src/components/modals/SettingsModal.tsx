@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Bell, BellOff, Trash2, AlertTriangle } from 'lucide-react';
+import { X, Bell, BellOff, Trash2, AlertTriangle, Heart } from 'lucide-react';
 import { 
   getNotificationPermission, 
   requestNotificationPermission,
@@ -130,6 +130,48 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 )}
               </div>
             )}
+          </div>
+
+          {/* Support Development Section */}
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium text-gray-800 mb-4">Support Development</h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <Heart className="w-5 h-5 text-pink-500 mt-0.5" />
+                <div>
+                  <p className="font-medium text-gray-700">Your generosity helps us serve the community</p>
+                  <p className="text-sm text-gray-600 mt-1">
+                    This app is free and ad-free. If you find it helpful for your prayer life, 
+                    consider supporting development and hosting costs.
+                  </p>
+                </div>
+              </div>
+              
+              <div className="pl-8">
+                <div className="flex flex-wrap gap-2">
+                  {[3, 5, 10, 15].map((amount) => (
+                    <a
+                      key={amount}
+                      href="https://ko-fi.com/woodleysolutions"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-pink-100 hover:bg-pink-200 text-pink-700 px-3 py-2 rounded-lg text-sm font-medium transition-colors border border-pink-200 hover:border-pink-300"
+                    >
+                      ${amount}
+                    </a>
+                  ))}
+                  <a
+                    href="https://ko-fi.com/woodleysolutions"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                  >
+                    Other Amount
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Clear Data Section */}
