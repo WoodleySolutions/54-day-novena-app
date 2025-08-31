@@ -3,7 +3,10 @@ import { X, Bell, BellOff, Trash2, AlertTriangle, Heart } from 'lucide-react';
 import { 
   getNotificationPermission, 
   requestNotificationPermission,
-  scheduleDailyReminder 
+  scheduleDailyReminder,
+  clearNotifications,
+  areNotificationsDisabled,
+  enableNotifications
 } from '../../utils/notifications';
 
 interface SettingsModalProps {
@@ -20,6 +23,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [permission, setPermission] = useState(getNotificationPermission());
   const [reminderTime, setReminderTime] = useState('09:00');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [notificationsDisabled, setNotificationsDisabled] = useState(areNotificationsDisabled());
 
   useEffect(() => {
     const checkPermission = () => {
@@ -28,6 +32,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
     if (isOpen) {
       checkPermission();
+      setNotificationsDisabled(areNotificationsDisabled());
       document.addEventListener('visibilitychange', checkPermission);
     }
 
@@ -41,14 +46,21 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
     setPermission(getNotificationPermission());
     
     if (granted) {
+      enableNotifications();
+      setNotificationsDisabled(false);
       const [hour, minute] = reminderTime.split(':').map(Number);
       scheduleDailyReminder(hour, minute);
     }
   };
 
+  const handleDisableNotifications = () => {
+    clearNotifications();
+    setNotificationsDisabled(true);
+  };
+
   const handleTimeChange = (newTime: string) => {
     setReminderTime(newTime);
-    if (permission.granted) {
+    if (permission.granted && !notificationsDisabled) {
       const [hour, minute] = newTime.split(':').map(Number);
       scheduleDailyReminder(hour, minute);
     }
@@ -96,7 +108,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Bell className={`w-5 h-5 ${permission.granted ? 'text-blue-600' : 'text-gray-500'}`} />
+                    <Bell className={`w-5 h-5 ${permission.granted && !notificationsDisabled ? 'text-blue-600' : 'text-gray-500'}`} />
                     <span className="font-medium text-gray-700">Daily Notifications</span>
                   </div>
                   
@@ -107,12 +119,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     >
                       Enable
                     </button>
+                  ) : notificationsDisabled ? (
+                    <button
+                      onClick={handleEnableNotifications}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Enable
+                    </button>
                   ) : (
-                    <span className="text-sm text-green-600 font-medium">✓ Enabled</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-green-600 font-medium">✓ Enabled</span>
+                      <button
+                        onClick={handleDisableNotifications}
+                        className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                      >
+                        Disable
+                      </button>
+                    </div>
                   )}
                 </div>
 
-                {permission.granted && (
+                {permission.granted && !notificationsDisabled && (
                   <div className="pl-8 space-y-3">
                     <div className="flex items-center justify-between">
                       <label className="text-sm font-medium text-gray-600">Reminder Time:</label>
@@ -125,6 +152,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                     <p className="text-sm text-gray-500">
                       You'll receive daily reminders to pray your novena at this time.
+                    </p>
+                  </div>
+                )}
+                
+                {permission.granted && notificationsDisabled && (
+                  <div className="pl-8">
+                    <p className="text-sm text-gray-500">
+                      Notifications are currently disabled. Click "Enable" above to turn them back on.
                     </p>
                   </div>
                 )}

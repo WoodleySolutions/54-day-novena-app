@@ -58,6 +58,12 @@ export const scheduleLocalNotification = (title: string, body: string, delayMinu
 };
 
 export const scheduleDailyReminder = (hour: number = 9, minute: number = 0) => {
+  // Don't schedule if user has disabled notifications
+  if (areNotificationsDisabled()) {
+    console.log('Notifications are disabled by user preference');
+    return;
+  }
+
   const now = new Date();
   const scheduledTime = new Date();
   scheduledTime.setHours(hour, minute, 0, 0);
@@ -77,4 +83,20 @@ export const scheduleDailyReminder = (hour: number = 9, minute: number = 0) => {
   );
 
   console.log(`Next reminder scheduled for ${scheduledTime.toLocaleString()}`);
+};
+
+export const clearNotifications = () => {
+  // Clear any existing timeouts (we can't actually clear them without IDs, but this is for future enhancement)
+  // For now, we'll store the preference in localStorage to indicate notifications are disabled
+  localStorage.setItem('notifications-disabled', 'true');
+  console.log('Notifications disabled by user');
+};
+
+export const areNotificationsDisabled = (): boolean => {
+  return localStorage.getItem('notifications-disabled') === 'true';
+};
+
+export const enableNotifications = () => {
+  localStorage.removeItem('notifications-disabled');
+  console.log('Notifications enabled by user');
 };
