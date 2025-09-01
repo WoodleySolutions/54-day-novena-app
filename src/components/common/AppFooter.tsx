@@ -26,7 +26,7 @@ export const AppFooter: React.FC = () => {
     <footer className="mt-12 text-center py-6 border-t border-gray-200 bg-white/50">
       <div className="space-y-2">
         <p className="text-gray-600 text-sm">
-          Developed by{' '}
+          Developed with devotion by{' '}
           <a 
             href="https://www.woodleysolutions.dev" 
             target="_blank" 
