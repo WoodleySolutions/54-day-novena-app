@@ -27,7 +27,14 @@ export const AppFooter: React.FC = () => {
       <div className="space-y-2">
         <p className="text-gray-600 text-sm">
           Developed by{' '}
-          <span className="font-semibold text-gray-800">Woodley Solutions</span>
+          <a 
+            href="https://www.woodleysolutions.dev" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="font-semibold text-gray-800 hover:text-indigo-600 transition-colors"
+          >
+            Woodley Solutions
+          </a>
         </p>
         <p className="text-gray-500 text-xs">
           Have feedback or suggestions?{' '}

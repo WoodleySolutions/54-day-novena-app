@@ -176,4 +176,4 @@ Traditional prayers are in the public domain.
 
 ---
 
-*Developed with devotion by [Woodley Solutions](https://woodleysolutions.com)*
+*Developed with devotion by [Woodley Solutions](https://www.woodleysolutions.dev)*
