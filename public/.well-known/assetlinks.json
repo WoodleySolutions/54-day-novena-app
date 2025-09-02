@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.woodleysolutions.novenatracker",
+    "sha256_cert_fingerprints": ["62:0E:2E:C7:CE:B7:EE:E3:61:CC:3A:CD:70:57:4E:42:13:BD:33:A2:1E:2D:98:80:5F:D5:D0:A4:6F:0A:C9:DF"]
+  }
+}]
