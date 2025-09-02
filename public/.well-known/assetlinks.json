@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "com.woodleysolutions.novenatracker",
-    "sha256_cert_fingerprints": ["62:0E:2E:C7:CE:B7:EE:E3:61:CC:3A:CD:70:57:4E:42:13:BD:33:A2:1E:2D:98:80:5F:D5:D0:A4:6F:0A:C9:DF"]
+    "sha256_cert_fingerprints": ["32:FE:E4:C1:E1:EE:6C:54:6A:2D:10:AB:A4:CB:3D:15:C0:56:2B:5E:E2:45:D9:03:2A:B7:8D:03:5A:B8:64:F7"]
   }
 }]
