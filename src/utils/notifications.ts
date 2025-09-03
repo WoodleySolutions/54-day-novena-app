@@ -274,9 +274,25 @@ export const showTestNotification = () => {
   }
 };
 
+// Simple immediate test to verify function execution
+export const showSimpleAlert = () => {
+  try {
+    console.log('showSimpleAlert called');
+    alert('🔔 Simple test - if you see this alert, the function is working!');
+    return true;
+  } catch (error) {
+    console.error('Even simple alert failed:', error);
+    return false;
+  }
+};
+
 // Alternative test using Service Worker
 export const showServiceWorkerTestNotification = async () => {
-  console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
+  try {
+    console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
+    
+    // Immediate confirmation
+    alert('🚀 Starting comprehensive notification test...');
   
   // Environment detection
   console.log('🌍 Environment Check:');

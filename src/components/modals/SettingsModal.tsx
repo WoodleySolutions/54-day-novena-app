@@ -10,7 +10,8 @@ import {
   getReminderTimePreference,
   setReminderTimePreference,
   showServiceWorkerTestNotification,
-  checkChromeNotificationDetails
+  checkChromeNotificationDetails,
+  showSimpleAlert
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -174,13 +175,46 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </p>
                     <div className="flex gap-2 flex-wrap">
                       <button
-                        onClick={() => showServiceWorkerTestNotification()}
+                        onClick={() => {
+                          try {
+                            console.log('Test Notification button clicked');
+                            showServiceWorkerTestNotification().catch(error => {
+                              console.error('SW test failed:', error);
+                              alert(`❌ Test failed: ${error.message}`);
+                            });
+                          } catch (error) {
+                            console.error('Button click error:', error);
+                            alert(`❌ Button error: ${(error as Error).message}`);
+                          }
+                        }}
                         className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-md hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
                       >
                         Test Notification
                       </button>
                       <button
-                        onClick={() => checkChromeNotificationDetails()}
+                        onClick={() => {
+                          try {
+                            console.log('Simple Alert button clicked');
+                            showSimpleAlert();
+                          } catch (error) {
+                            console.error('Simple alert error:', error);
+                            alert(`Simple alert failed: ${(error as Error).message}`);
+                          }
+                        }}
+                        className="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                      >
+                        Simple Test
+                      </button>
+                      <button
+                        onClick={() => {
+                          try {
+                            console.log('Debug Info button clicked');
+                            checkChromeNotificationDetails();
+                          } catch (error) {
+                            console.error('Debug info error:', error);
+                            alert(`❌ Debug failed: ${(error as Error).message}`);
+                          }
+                        }}
                         className="text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-md hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
                       >
                         Debug Info
