@@ -9,6 +9,7 @@ import { ProgressBar } from './components/common/ProgressBar';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
 import { initGA, analytics } from './utils/analytics';
+import { initializeNotifications } from './utils/notifications';
 import { StorageDebug } from './components/common/StorageDebug';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { 
@@ -37,9 +38,10 @@ const NovenaTracker: React.FC = () => {
     clearAllData
   } = useNovenaState();
 
-  // Initialize Google Analytics on component mount
+  // Initialize Google Analytics and notifications on component mount
   useEffect(() => {
     initGA();
+    initializeNotifications();
   }, []);
 
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);

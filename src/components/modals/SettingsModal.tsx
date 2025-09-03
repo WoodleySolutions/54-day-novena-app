@@ -6,7 +6,10 @@ import {
   scheduleDailyReminder,
   clearNotifications,
   areNotificationsDisabled,
-  enableNotifications
+  enableNotifications,
+  getReminderTimePreference,
+  setReminderTimePreference,
+  showTestNotification
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -27,7 +30,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onClearData
 }) => {
   const [permission, setPermission] = useState(getNotificationPermission());
-  const [reminderTime, setReminderTime] = useState('09:00');
+  const [reminderTime, setReminderTime] = useState(getReminderTimePreference());
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [notificationsDisabled, setNotificationsDisabled] = useState(areNotificationsDisabled());
   const [keepScreenAwake, setKeepScreenAwake] = useState(getKeepScreenAwakePreference());
@@ -69,6 +72,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   const handleTimeChange = (newTime: string) => {
     setReminderTime(newTime);
+    setReminderTimePreference(newTime);
     if (permission.granted && !notificationsDisabled) {
       const [hour, minute] = newTime.split(':').map(Number);
       scheduleDailyReminder(hour, minute);
@@ -156,17 +160,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 {permission.granted && !notificationsDisabled && (
                   <div className="pl-8 space-y-3">
                     <div className="flex items-center justify-between">
-                      <label className="text-sm font-medium text-gray-600">Reminder Time:</label>
+                      <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Reminder Time:</label>
                       <input
                         type="time"
                         value={reminderTime}
                         onChange={(e) => handleTimeChange(e.target.value)}
-                        className="border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-300"
                       />
                     </div>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       You'll receive daily reminders to pray your novena at this time.
                     </p>
+                    <button
+                      onClick={() => showTestNotification()}
+                      className="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                    >
+                      Test Notification
+                    </button>
                   </div>
                 )}
                 

@@ -31,7 +31,11 @@
 - Lighter purple/indigo colors in dark mode for better contrast
 
 ### 🐛 Bug Fixes
-- (None yet)
+- **Fixed notification system not working**: Improved scheduling and initialization
+- **Fixed reminder time not persisting**: Now saves and loads time preference from localStorage
+- **Enhanced notification reliability**: Better service worker integration and fallback systems
+- **Added test notification feature**: Users can verify notifications are working
+- **Fixed dark mode styling**: Time input and notification controls now properly themed
 
 ---
 
