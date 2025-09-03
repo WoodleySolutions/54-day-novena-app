@@ -88,7 +88,7 @@ const scheduleServiceWorkerNotification = async (hour: number, minute: number) =
   }
 };
 
-const scheduleFallbackNotification = (hour: number, minute: number) => {
+const scheduleFallbackNotification = async (hour: number, minute: number) => {
   const now = new Date();
   const scheduledTime = new Date();
   scheduledTime.setHours(hour, minute, 0, 0);
@@ -100,25 +100,49 @@ const scheduleFallbackNotification = (hour: number, minute: number) => {
 
   const timeUntilNotification = scheduledTime.getTime() - now.getTime();
 
-  setTimeout(() => {
+  setTimeout(async () => {
     if (getNotificationPermission().granted && !areNotificationsDisabled()) {
-      const notification = new Notification('54-Day Novena Reminder', {
-        body: "It's time for your daily novena prayer! 🙏",
-        icon: '/android-chrome-192x192.png',
-        badge: '/favicon-32x32.png',
-        tag: 'novena-reminder'
-      });
+      // Try Service Worker first (required for TWA), fall back to regular notifications
+      if ('serviceWorker' in navigator && 'showNotification' in ServiceWorkerRegistration.prototype) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification('54-Day Novena Reminder', {
+            body: "It's time for your daily novena prayer! 🙏",
+            icon: '/android-chrome-192x192.png',
+            badge: '/favicon-32x32.png',
+            tag: 'novena-reminder',
+            requireInteraction: true
+          });
+        } catch (error) {
+          console.error('Service worker notification failed:', error);
+          // Don't fall back to regular Notification in TWA - it will fail
+        }
+      } else {
+        // Only try regular notifications if not in TWA
+        if (!isTrustedWebActivity()) {
+          try {
+            const notification = new Notification('54-Day Novena Reminder', {
+              body: "It's time for your daily novena prayer! 🙏",
+              icon: '/android-chrome-192x192.png',
+              badge: '/favicon-32x32.png',
+              tag: 'novena-reminder'
+            });
 
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
-      };
+            notification.onclick = () => {
+              window.focus();
+              notification.close();
+            };
 
-      setTimeout(() => notification.close(), 30000);
+            setTimeout(() => notification.close(), 30000);
+          } catch (error) {
+            console.error('Regular notification failed:', error);
+          }
+        }
+      }
     }
   }, timeUntilNotification);
 
-  console.log(`Fallback reminder scheduled for ${scheduledTime.toLocaleString()}`);
+  console.log(`Reminder scheduled for ${scheduledTime.toLocaleString()}`);
 };
 
 export const clearNotifications = () => {
@@ -328,10 +352,60 @@ export const checkChromeNotificationDetails = () => {
     navigator.permissions.query({name: 'notifications'}).then(result => {
       console.log('Permissions API result:', result.state);
       console.log('Permission object:', result);
+      alert(`Permissions API: ${result.state}\nNotification.permission: ${Notification.permission}\nIs TWA: ${isTrustedWebActivity()}`);
     }).catch(err => {
       console.log('Permissions API error:', err);
+      alert(`Permission check failed: ${err.message}`);
     });
+  } else {
+    alert(`No Permissions API\nNotification.permission: ${Notification.permission}\nIs TWA: ${isTrustedWebActivity()}`);
   }
   
   console.log('=== END CHROME NOTIFICATION DETAILS ===');
+};
+
+// Force permission re-request specifically for TWA
+export const forceRequestNotificationPermission = async (): Promise<boolean> => {
+  console.log('=== FORCE PERMISSION REQUEST ===');
+  
+  if (!('Notification' in window)) {
+    alert('Notifications not supported in this environment');
+    return false;
+  }
+
+  console.log('Current permission before request:', Notification.permission);
+  
+  try {
+    // Clear any cached permission state
+    localStorage.removeItem('notification-permission-timestamp');
+    
+    // Force a new permission request
+    const permission = await Notification.requestPermission();
+    console.log('New permission result:', permission);
+    
+    // Store timestamp of when we requested
+    localStorage.setItem('notification-permission-timestamp', Date.now().toString());
+    
+    if (permission === 'granted') {
+      alert('✅ Permission granted successfully!');
+      // Test with immediate notification
+      try {
+        const testNotif = new Notification('Permission Success!', {
+          body: 'Notifications should now work! 🎉',
+          icon: '/android-chrome-192x192.png'
+        });
+        setTimeout(() => testNotif.close(), 5000);
+      } catch (err) {
+        console.error('Immediate test notification failed:', err);
+      }
+      return true;
+    } else {
+      alert(`❌ Permission ${permission}. Check your browser/device settings.`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Permission request error:', error);
+    alert(`Permission request failed: ${(error as Error).message}`);
+    return false;
+  }
 };
