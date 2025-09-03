@@ -288,11 +288,10 @@ export const showSimpleAlert = () => {
 
 // Alternative test using Service Worker
 export const showServiceWorkerTestNotification = async () => {
-  try {
-    console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
-    
-    // Immediate confirmation
-    alert('🚀 Starting comprehensive notification test...');
+  console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
+  
+  // Immediate confirmation
+  alert('🚀 Starting comprehensive notification test...');
   
   // Environment detection
   console.log('🌍 Environment Check:');
@@ -342,7 +341,7 @@ export const showServiceWorkerTestNotification = async () => {
         active: !!reg.active,
         installing: !!reg.installing,
         waiting: !!reg.waiting,
-        updatefound: reg.updatefound
+        onupdatefound: !!reg.onupdatefound
       });
     });
     
@@ -482,7 +481,6 @@ export const showServiceWorkerTestNotification = async () => {
           title: notif.title,
           body: notif.body,
           tag: notif.tag,
-          timestamp: notif.timestamp,
           data: notif.data
         });
         
