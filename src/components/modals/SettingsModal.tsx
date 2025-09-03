@@ -197,8 +197,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div>
                   <p className="font-medium text-blue-900 dark:text-blue-100">Coming Soon</p>
                   <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                    Mobile notifications will be available when we migrate to Capacitor. 
-                    For now, set a phone reminder or bookmark the app for daily prayer.
+                    Mobile notifications will be available in a future update. 
+                    We recommend setting a phone reminder or bookmarking the app for your daily prayer time.
                   </p>
                 </div>
               </div>
