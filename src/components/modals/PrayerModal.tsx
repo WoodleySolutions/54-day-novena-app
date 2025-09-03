@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { MysteryType, NovenaPhase } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES } from '../../constants/novena';
 import { ExpandablePrayer } from '../common/ExpandablePrayer';
 import { getPrayerText } from '../../constants/commonPrayers';
+import { 
+  requestWakeLock, 
+  releaseWakeLock, 
+  getKeepScreenAwakePreference 
+} from '../../utils/screenWakeLock';
 
 interface PrayerModalProps {
   isOpen: boolean;
@@ -33,6 +38,18 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   onComplete
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  // Handle wake lock when modal opens/closes
+  useEffect(() => {
+    if (isOpen && getKeepScreenAwakePreference()) {
+      requestWakeLock();
+    }
+
+    return () => {
+      // Always release wake lock when modal closes or component unmounts
+      releaseWakeLock();
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -155,6 +172,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   };
 
   const handleComplete = () => {
+    releaseWakeLock();
     onComplete();
     onClose();
     setCurrentStepIndex(0);

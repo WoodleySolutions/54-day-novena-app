@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Bell, BellOff, Trash2, AlertTriangle, Heart } from 'lucide-react';
+import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff } from 'lucide-react';
 import { 
   getNotificationPermission, 
   requestNotificationPermission,
@@ -8,6 +8,11 @@ import {
   areNotificationsDisabled,
   enableNotifications
 } from '../../utils/notifications';
+import {
+  isWakeLockSupported,
+  getKeepScreenAwakePreference,
+  setKeepScreenAwakePreference
+} from '../../utils/screenWakeLock';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -24,6 +29,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [reminderTime, setReminderTime] = useState('09:00');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [notificationsDisabled, setNotificationsDisabled] = useState(areNotificationsDisabled());
+  const [keepScreenAwake, setKeepScreenAwake] = useState(getKeepScreenAwakePreference());
 
   useEffect(() => {
     const checkPermission = () => {
@@ -64,6 +70,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
       const [hour, minute] = newTime.split(':').map(Number);
       scheduleDailyReminder(hour, minute);
     }
+  };
+
+  const handleKeepScreenAwakeToggle = (enabled: boolean) => {
+    setKeepScreenAwake(enabled);
+    setKeepScreenAwakePreference(enabled);
   };
 
   const handleClearData = () => {
@@ -166,6 +177,41 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             )}
           </div>
+
+          {/* Screen Wake Lock Setting - Only show if supported */}
+          {isWakeLockSupported() && (
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-medium text-gray-800 mb-4">Prayer Experience</h3>
+              
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {keepScreenAwake ? (
+                      <Monitor className="w-5 h-5 text-blue-600" />
+                    ) : (
+                      <MonitorOff className="w-5 h-5 text-gray-500" />
+                    )}
+                    <div>
+                      <span className="font-medium text-gray-700">Keep Screen Awake</span>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Prevents screen from dimming while prayer modal is open
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="sr-only peer"
+                      checked={keepScreenAwake}
+                      onChange={(e) => handleKeepScreenAwakeToggle(e.target.checked)}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Support Development Section */}
           <div className="border-t pt-6">
