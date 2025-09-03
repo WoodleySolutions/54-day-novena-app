@@ -11,7 +11,8 @@ import {
   setReminderTimePreference,
   showServiceWorkerTestNotification,
   checkChromeNotificationDetails,
-  showSimpleAlert
+  showSimpleAlert,
+  checkTWAInstallationDetails
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -218,6 +219,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         className="text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-md hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
                       >
                         Debug Info
+                      </button>
+                      <button
+                        onClick={() => {
+                          try {
+                            console.log('TWA Analysis button clicked');
+                            checkTWAInstallationDetails();
+                          } catch (error) {
+                            console.error('TWA analysis error:', error);
+                            alert(`❌ TWA analysis failed: ${(error as Error).message}`);
+                          }
+                        }}
+                        className="text-sm bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-md hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
+                      >
+                        TWA Analysis
                       </button>
                     </div>
                     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2">

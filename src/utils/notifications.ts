@@ -614,6 +614,97 @@ export const forceRequestNotificationPermission = async (): Promise<boolean> => 
   }
 };
 
+// Check TWA vs PWA installation differences
+export const checkTWAInstallationDetails = async () => {
+  console.log('=== TWA INSTALLATION ANALYSIS ===');
+  
+  let analysis = [];
+  let details = '🔍 TWA Installation Analysis:\n\n';
+  
+  // Check installation method
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  const userAgent = navigator.userAgent;
+  const hasWebView = userAgent.includes('wv');
+  const isAndroid = /Android/i.test(userAgent);
+  
+  details += `📱 Installation Type:\n`;
+  details += `• Display mode standalone: ${isStandalone}\n`;
+  details += `• User agent contains 'wv': ${hasWebView}\n`;
+  details += `• Is Android: ${isAndroid}\n`;
+  details += `• Our TWA detection: ${isTrustedWebActivity()}\n\n`;
+  
+  // Check Service Worker registration
+  details += `🔧 Service Worker Status:\n`;
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    details += `• Total registrations: ${registrations.length}\n`;
+    
+    if (registrations.length === 0) {
+      analysis.push('No Service Worker registered');
+      details += `❌ NO SERVICE WORKER FOUND\n`;
+      details += `This explains why notifications don't work!\n\n`;
+      
+      details += `🤔 Possible causes:\n`;
+      details += `• TWA build didn't include Service Worker properly\n`;
+      details += `• Different Service Worker scope in Play Store version\n`;
+      details += `• Bubblewrap configuration issue\n`;
+      details += `• Service Worker not registering in TWA context\n\n`;
+      
+      details += `🔧 Solutions to try:\n`;
+      details += `• Check if SW works in browser version (54dayrosary.com)\n`;
+      details += `• Compare TWA manifest with web manifest\n`;
+      details += `• Check Bubblewrap build configuration\n`;
+      details += `• Verify SW registration in public/ folder\n`;
+    } else {
+      registrations.forEach((reg, index) => {
+        details += `Registration ${index + 1}:\n`;
+        details += `  • Scope: ${reg.scope}\n`;
+        details += `  • Active: ${!!reg.active}\n`;
+        details += `  • Installing: ${!!reg.installing}\n`;
+        details += `  • Waiting: ${!!reg.waiting}\n`;
+        if (reg.active) {
+          details += `  • Script URL: ${reg.active.scriptURL}\n`;
+          details += `  • State: ${reg.active.state}\n`;
+        }
+        details += `\n`;
+      });
+    }
+  } catch (error) {
+    analysis.push(`Service Worker check failed: ${(error as Error).message}`);
+    details += `❌ SW check error: ${(error as Error).message}\n\n`;
+  }
+  
+  // Check if we can register a Service Worker manually
+  details += `🔄 Manual SW Registration Test:\n`;
+  try {
+    if ('serviceWorker' in navigator) {
+      details += `• ServiceWorker API available: ✅\n`;
+      // Try to register a service worker (this will show if registration is blocked)
+      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+      details += `• Manual registration test: ✅ SUCCESS\n`;
+      details += `• New registration scope: ${registration.scope}\n`;
+    } else {
+      details += `• ServiceWorker API available: ❌ NOT AVAILABLE\n`;
+      analysis.push('Service Worker API not available in TWA');
+    }
+  } catch (swError) {
+    details += `• Manual registration test: ❌ FAILED\n`;
+    details += `• Error: ${(swError as Error).message}\n`;
+    analysis.push(`SW manual registration failed: ${(swError as Error).message}`);
+  }
+  
+  // Show results
+  if (analysis.length === 0) {
+    alert(`✅ TWA Installation looks normal\n\n${details}`);
+  } else {
+    alert(`❌ Found ${analysis.length} TWA issues:\n\n${analysis.join('\n')}\n\n${details}`);
+  }
+  
+  console.log('TWA Analysis:', analysis);
+  console.log('TWA Details:', details);
+  console.log('=== END TWA INSTALLATION ANALYSIS ===');
+};
+
 // Check for Android system-level notification restrictions
 export const checkAndroidNotificationRestrictions = async () => {
   console.log('=== ANDROID NOTIFICATION RESTRICTIONS CHECK ===');
