@@ -1,7 +1,7 @@
 # 54-Day Novena App - Development Strategy
 
 ## Current Status
-- **Web App**: Live at 54dayrosary.com
+- **Web App**: Live at 54dayrosary.com  
 - **Android**: In Google Play Store closed testing
 - **TWA Status**: Working correctly (browser UI hidden)
 - **Testing Phase**: Need 12 testers for 14 days before production release
@@ -11,10 +11,25 @@
 - Daily prayer guidance with expandable sections
 - Intention setting and storage
 - Progress tracking with localStorage persistence
-- Optional daily reminder notifications
+- **Desktop notifications** (browser-based reminder system)
+- **Mobile-optimized experience** (notifications hidden until Capacitor migration)
 - Data reset functionality
 - Offline PWA capabilities
+- Dark mode with system preference detection
+- Screen wake lock for prayer sessions
 - Ko-fi donation integration
+
+## Notification Strategy
+### Current Approach (v0.2.0)
+- **Desktop browsers**: Full notification functionality with scheduling and permissions
+- **Mobile/TWA/PWA**: Notifications hidden with "Coming Soon" message
+- **User communication**: Clear explanation of Capacitor migration plan
+- **Clean UX**: No debugging buttons or technical complexity exposed to users
+
+### Future Migration to Capacitor
+- **Timeline**: Post-launch when ready for native mobile features
+- **Benefits**: Native Android notifications, better app store presence, more device APIs
+- **Migration scope**: Wrapper change only - React app stays the same
 
 ## Monetization Strategy
 - **Current**: Free app with optional Ko-fi donations

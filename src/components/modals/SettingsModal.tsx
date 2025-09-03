@@ -9,11 +9,7 @@ import {
   enableNotifications,
   getReminderTimePreference,
   setReminderTimePreference,
-  showServiceWorkerTestNotification,
-  checkChromeNotificationDetails,
-  showSimpleAlert,
-  checkTWAInstallationDetails,
-  forceTWAServiceWorkerRegistration
+  shouldShowNotifications
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -110,13 +106,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Notification Settings */}
+          {/* Notification Settings - Desktop Only */}
+          {shouldShowNotifications() && (
           <div>
             <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Prayer Reminders</h3>
             
             {permission.denied ? (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-yellow-800">
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
                   <BellOff className="w-5 h-5" />
                   <div>
                     <p className="font-medium">Notifications Blocked</p>
@@ -131,7 +128,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Bell className={`w-5 h-5 ${permission.granted && !notificationsDisabled ? 'text-blue-600' : 'text-gray-500'}`} />
-                    <span className="font-medium text-gray-700">Daily Notifications</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-200">Daily Notifications</span>
                   </div>
                   
                   {!permission.granted ? (
@@ -150,7 +147,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </button>
                   ) : (
                     <div className="flex items-center gap-3">
-                      <span className="text-sm text-green-600 font-medium">✓ Enabled</span>
+                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">✓ Enabled</span>
                       <button
                         onClick={handleDisableNotifications}
                         className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
@@ -175,90 +172,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       You'll receive daily reminders to pray your novena at this time.
                     </p>
-                    <div className="flex gap-2 flex-wrap">
-                      <button
-                        onClick={() => {
-                          try {
-                            console.log('Test Notification button clicked');
-                            showServiceWorkerTestNotification().catch(error => {
-                              console.error('SW test failed:', error);
-                              alert(`❌ Test failed: ${error.message}`);
-                            });
-                          } catch (error) {
-                            console.error('Button click error:', error);
-                            alert(`❌ Button error: ${(error as Error).message}`);
-                          }
-                        }}
-                        className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-md hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
-                      >
-                        Test Notification
-                      </button>
-                      <button
-                        onClick={() => {
-                          try {
-                            console.log('Simple Alert button clicked');
-                            showSimpleAlert();
-                          } catch (error) {
-                            console.error('Simple alert error:', error);
-                            alert(`Simple alert failed: ${(error as Error).message}`);
-                          }
-                        }}
-                        className="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-                      >
-                        Simple Test
-                      </button>
-                      <button
-                        onClick={() => {
-                          try {
-                            console.log('Debug Info button clicked');
-                            checkChromeNotificationDetails();
-                          } catch (error) {
-                            console.error('Debug info error:', error);
-                            alert(`❌ Debug failed: ${(error as Error).message}`);
-                          }
-                        }}
-                        className="text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-md hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-                      >
-                        Debug Info
-                      </button>
-                      <button
-                        onClick={() => {
-                          try {
-                            console.log('TWA Analysis button clicked');
-                            checkTWAInstallationDetails();
-                          } catch (error) {
-                            console.error('TWA analysis error:', error);
-                            alert(`❌ TWA analysis failed: ${(error as Error).message}`);
-                          }
-                        }}
-                        className="text-sm bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-md hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
-                      >
-                        TWA Analysis
-                      </button>
-                      <button
-                        onClick={() => {
-                          try {
-                            console.log('Force SW Registration button clicked');
-                            forceTWAServiceWorkerRegistration();
-                          } catch (error) {
-                            console.error('Force SW registration error:', error);
-                            alert(`❌ Force registration failed: ${(error as Error).message}`);
-                          }
-                        }}
-                        className="text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-3 py-1 rounded-md hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
-                      >
-                        Force SW Fix
-                      </button>
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2">
-                      <strong>Android App Issue:</strong> Regular notifications are blocked in TWA apps. Only Service Worker notifications work. Try "Test Notification" button - it uses the correct method.
-                    </div>
                   </div>
                 )}
                 
                 {permission.granted && notificationsDisabled && (
                   <div className="pl-8">
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Notifications are currently disabled. Click "Enable" above to turn them back on.
                     </p>
                   </div>
@@ -266,6 +185,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               </div>
             )}
           </div>
+          )}
+
+          {/* Mobile Notification Info */}
+          {!shouldShowNotifications() && (
+          <div>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Prayer Reminders</h3>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Bell className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div>
+                  <p className="font-medium text-blue-900 dark:text-blue-100">Coming Soon</p>
+                  <p className="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                    Mobile notifications will be available when we migrate to Capacitor. 
+                    For now, set a phone reminder or bookmark the app for daily prayer.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          )}
 
           {/* Screen Wake Lock Setting - Only show if supported */}
           {isWakeLockSupported() && (

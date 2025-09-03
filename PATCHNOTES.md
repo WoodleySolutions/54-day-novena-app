@@ -31,11 +31,15 @@
 - Lighter purple/indigo colors in dark mode for better contrast
 
 ### 🐛 Bug Fixes
-- **Fixed notification system not working**: Improved scheduling and initialization
-- **Fixed reminder time not persisting**: Now saves and loads time preference from localStorage
-- **Enhanced notification reliability**: Better service worker integration and fallback systems
-- **Added test notification feature**: Users can verify notifications are working
 - **Fixed dark mode styling**: Time input and notification controls now properly themed
+- **Optimized mobile experience**: Hidden non-functional notification features on mobile/TWA
+- **Cleaned up codebase**: Removed debugging code and optimized bundle size (-4KB)
+- **Desktop notifications work reliably**: Maintained notification functionality for desktop browsers
+
+### 📱 Mobile Improvements  
+- **TWA/Mobile notification handling**: Gracefully hidden notification features that don't work on mobile
+- **Clear user communication**: Added "Coming Soon" message explaining Capacitor migration for mobile notifications
+- **Focused mobile experience**: Removed debugging buttons and technical alerts that cluttered mobile interface
 
 ---
 
