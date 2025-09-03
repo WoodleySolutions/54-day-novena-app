@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff } from 'lucide-react';
+import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff, Sun, Moon, Laptop } from 'lucide-react';
 import { 
   getNotificationPermission, 
   requestNotificationPermission,
@@ -13,6 +13,7 @@ import {
   getKeepScreenAwakePreference,
   setKeepScreenAwakePreference
 } from '../../utils/screenWakeLock';
+import { useTheme, ThemeMode } from '../../contexts/ThemeContext';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -30,6 +31,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [notificationsDisabled, setNotificationsDisabled] = useState(areNotificationsDisabled());
   const [keepScreenAwake, setKeepScreenAwake] = useState(getKeepScreenAwakePreference());
+  
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const checkPermission = () => {
@@ -87,12 +90,12 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-xl font-semibold text-gray-800">Settings</h2>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto transition-colors duration-300">
+        <div className="flex items-center justify-between p-6 border-b dark:border-gray-600 transition-colors duration-300">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Settings</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
           >
             <X className="w-5 h-5 text-gray-500" />
           </button>
@@ -101,7 +104,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="p-6 space-y-6">
           {/* Notification Settings */}
           <div>
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Prayer Reminders</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Prayer Reminders</h3>
             
             {permission.denied ? (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -181,7 +184,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
           {/* Screen Wake Lock Setting - Only show if supported */}
           {isWakeLockSupported() && (
             <div className="border-t pt-6">
-              <h3 className="text-lg font-medium text-gray-800 mb-4">Prayer Experience</h3>
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Prayer Experience</h3>
               
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -213,9 +216,55 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           )}
 
+          {/* Theme Settings */}
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Appearance</h3>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  {theme === 'light' ? (
+                    <Sun className="w-5 h-5 text-yellow-500" />
+                  ) : theme === 'dark' ? (
+                    <Moon className="w-5 h-5 text-blue-400" />
+                  ) : (
+                    <Laptop className="w-5 h-5 text-gray-500" />
+                  )}
+                  <div>
+                    <span className="font-medium text-gray-700 dark:text-gray-200">Theme</span>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                      Choose your preferred color scheme
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 transition-colors duration-300">
+                  {([
+                    { mode: 'light' as ThemeMode, icon: Sun, label: 'Light' },
+                    { mode: 'dark' as ThemeMode, icon: Moon, label: 'Dark' },
+                    { mode: 'system' as ThemeMode, icon: Laptop, label: 'Auto' }
+                  ]).map(({ mode, icon: Icon, label }) => (
+                    <button
+                      key={mode}
+                      onClick={() => setTheme(mode)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        theme === mode
+                          ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-white'
+                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Support Development Section */}
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Support Development</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Support Development</h3>
             
             <div className="space-y-4">
               <div className="flex items-start gap-3">
@@ -245,7 +294,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
           {/* Clear Data Section */}
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-800 mb-4">Data Management</h3>
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Data Management</h3>
             
             {!showClearConfirm ? (
               <div className="space-y-3">

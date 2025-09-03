@@ -13,6 +13,14 @@
 - Intelligently hidden on iOS Safari where unsupported
 - Screen wake lock automatically releases when prayer completes
 
+#### Dark Mode Support
+- Added comprehensive dark mode toggle in Settings → Appearance
+- Three options: Light, Dark, and Auto (follows system preference)
+- Smooth transitions between themes
+- System preference detection and automatic switching
+- Persistent theme selection across sessions
+- Full UI coverage including modals, cards, and text
+
 ### 🔧 Technical Improvements
 - Enhanced Screen Wake Lock API integration
 - Improved iOS Safari compatibility detection

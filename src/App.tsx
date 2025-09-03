@@ -10,6 +10,7 @@ import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
 import { initGA, analytics } from './utils/analytics';
 import { StorageDebug } from './components/common/StorageDebug';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { 
   getCurrentPhase, 
   getMysteryForDay, 
@@ -73,17 +74,18 @@ const NovenaTracker: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <ThemeProvider>
+      <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
       <AppHeader onClearData={clearAllData} />
 
       {/* Progress Overview Section */}
       {startDate && (
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6 transition-colors duration-300">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">Your Progress</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Your Progress</h2>
             <div className="text-right">
               <div className="text-2xl font-bold text-indigo-600">{completedDays.size}/{TOTAL_DAYS}</div>
-              <div className="text-sm text-gray-500">days completed</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400">days completed</div>
             </div>
           </div>
           
@@ -91,9 +93,9 @@ const NovenaTracker: React.FC = () => {
           
           {/* User's Intention Display */}
           {intention && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-700 mb-2">Your Intention:</h3>
-              <p className="text-gray-600 italic">"{intention}"</p>
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 transition-colors duration-300">
+              <h3 className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Your Intention:</h3>
+              <p className="text-gray-600 dark:text-gray-300 italic">"{intention}"</p>
             </div>
           )}
         </div>
@@ -112,7 +114,7 @@ const NovenaTracker: React.FC = () => {
               Day {currentDay}
             </span>
           </button>
-          <p className="text-sm text-gray-600 mt-2">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
             {getMysteryForDay(currentDay)} Mysteries • {getPhaseInfo(getCurrentPhase(currentDay)).title}
           </p>
         </div>
@@ -121,10 +123,10 @@ const NovenaTracker: React.FC = () => {
       {/* Start Novena or Main Tracking Interface */}
       {!startDate ? (
         // Initial Start Screen
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center transition-colors duration-300">
           <Calendar className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Begin Your 54-Day Novena</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Begin Your 54-Day Novena</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Start your spiritual journey of prayer and devotion. Set your intention and 
             begin tracking your daily progress through both phases of this powerful novena.
           </p>
@@ -158,8 +160,8 @@ const NovenaTracker: React.FC = () => {
           </div>
 
           {/* Detailed Daily Progress Grid */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Daily Progress</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Daily Progress</h3>
             
             {/* Cycle-by-Cycle Breakdown */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -167,7 +169,7 @@ const NovenaTracker: React.FC = () => {
                 const phaseStart = phase === 'petition' ? 1 : DAYS_PER_PHASE + 1;
                 return (
                   <div key={phase}>
-                    <h4 className="font-semibold text-gray-700 mb-3 capitalize">{phase} Phase</h4>
+                    <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 capitalize">{phase} Phase</h4>
                     <div className="space-y-3">
                       {/* Display each 3-day cycle */}
                       {Array.from({length: 9}, (_, cycleIndex) => {
@@ -175,8 +177,8 @@ const NovenaTracker: React.FC = () => {
                         const cycleDays = [cycleStart, cycleStart + 1, cycleStart + 2];
                         
                         return (
-                          <div key={cycleIndex} className="border border-gray-200 rounded p-3">
-                            <div className="text-sm font-medium text-gray-600 mb-2">
+                          <div key={cycleIndex} className="border border-gray-200 dark:border-gray-600 rounded p-3 transition-colors duration-300">
+                            <div className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">
                               Cycle {cycleIndex + 1} (Days {cycleStart}-{cycleStart + 2})
                             </div>
                             <div className="flex gap-1">
@@ -223,8 +225,9 @@ const NovenaTracker: React.FC = () => {
       {/* Debug component - only show in development */}
       <StorageDebug isVisible={process.env.NODE_ENV === 'development'} />
       
-      <AppFooter />
-    </div>
+        <AppFooter />
+      </div>
+    </ThemeProvider>
   );
 };
 
