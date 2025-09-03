@@ -31,15 +31,22 @@
 - Lighter purple/indigo colors in dark mode for better contrast
 
 ### 🐛 Bug Fixes
-- **Fixed dark mode styling**: Time input and notification controls now properly themed
+- **Comprehensive dark mode styling**: Complete Settings modal dark mode consistency with proper text contrast and icon visibility
+- **Time input clock icon visibility**: Fixed dark mode time selector with proper color scheme override
 - **Optimized mobile experience**: Hidden non-functional notification features on mobile/TWA
 - **Cleaned up codebase**: Removed debugging code and optimized bundle size (-4KB)
 - **Desktop notifications work reliably**: Maintained notification functionality for desktop browsers
 
 ### 📱 Mobile Improvements  
 - **TWA/Mobile notification handling**: Gracefully hidden notification features that don't work on mobile
-- **Clear user communication**: Added "Coming Soon" message explaining Capacitor migration for mobile notifications
+- **User-friendly messaging**: Added polished "Coming Soon" message without technical jargon
 - **Focused mobile experience**: Removed debugging buttons and technical alerts that cluttered mobile interface
+
+### 🌙 Dark Mode Polish
+- **Settings modal consistency**: All text, icons, borders, and components properly themed for dark mode
+- **Enhanced readability**: Proper contrast ratios for all text elements in dark mode
+- **Interactive element theming**: Toggle switches, buttons, and form controls with dark mode variants
+- **Icon visibility improvements**: All icons now visible and properly contrasted in dark mode
 
 ---
 

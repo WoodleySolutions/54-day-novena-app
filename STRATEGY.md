@@ -5,6 +5,7 @@
 - **Android**: In Google Play Store closed testing
 - **TWA Status**: Working correctly (browser UI hidden)
 - **Testing Phase**: Need 12 testers for 14 days before production release
+- **Current Version**: v0.2.0 - Production ready with optimized mobile experience
 
 ## Core App Features (Implemented)
 - 54-day novena tracking (petition + thanksgiving phases)
@@ -30,6 +31,7 @@
 - **Timeline**: Post-launch when ready for native mobile features
 - **Benefits**: Native Android notifications, better app store presence, more device APIs
 - **Migration scope**: Wrapper change only - React app stays the same
+- **Current state**: All notification debugging removed, clean foundation for Capacitor integration
 
 ## Monetization Strategy
 - **Current**: Free app with optional Ko-fi donations
