@@ -221,42 +221,59 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Appearance</h3>
             
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {theme === 'light' ? (
-                    <Sun className="w-5 h-5 text-yellow-500" />
-                  ) : theme === 'dark' ? (
-                    <Moon className="w-5 h-5 text-blue-400" />
-                  ) : (
-                    <Laptop className="w-5 h-5 text-gray-500" />
-                  )}
-                  <div>
-                    <span className="font-medium text-gray-700 dark:text-gray-200">Theme</span>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                      Choose your preferred color scheme
-                    </p>
+              <div className="flex items-start gap-3">
+                {theme === 'light' ? (
+                  <Sun className="w-5 h-5 text-yellow-500 mt-0.5" />
+                ) : theme === 'dark' ? (
+                  <Moon className="w-5 h-5 text-blue-400 mt-0.5" />
+                ) : (
+                  <Laptop className="w-5 h-5 text-gray-500 mt-0.5" />
+                )}
+                <div className="flex-1">
+                  <span className="font-medium text-gray-700 dark:text-gray-200">Theme</span>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 mb-3">
+                    Choose your preferred color scheme
+                  </p>
+                  
+                  <div className="space-y-2">
+                    {([
+                      { mode: 'light' as ThemeMode, icon: Sun, label: 'Light', description: 'Always use light theme' },
+                      { mode: 'dark' as ThemeMode, icon: Moon, label: 'Dark', description: 'Always use dark theme' },
+                      { mode: 'system' as ThemeMode, icon: Laptop, label: 'System', description: 'Follow your device setting' }
+                    ]).map(({ mode, icon: Icon, label, description }) => (
+                      <button
+                        key={mode}
+                        onClick={() => setTheme(mode)}
+                        className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
+                          theme === mode
+                            ? 'bg-indigo-50 dark:bg-indigo-900 border-2 border-indigo-200 dark:border-indigo-600'
+                            : 'bg-gray-50 dark:bg-gray-700 border-2 border-transparent hover:border-gray-200 dark:hover:border-gray-600'
+                        }`}
+                      >
+                        <Icon className={`w-5 h-5 ${
+                          theme === mode 
+                            ? 'text-indigo-600 dark:text-indigo-400' 
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`} />
+                        <div>
+                          <div className={`font-medium ${
+                            theme === mode 
+                              ? 'text-indigo-900 dark:text-indigo-100' 
+                              : 'text-gray-900 dark:text-gray-100'
+                          }`}>
+                            {label}
+                          </div>
+                          <div className={`text-sm ${
+                            theme === mode 
+                              ? 'text-indigo-700 dark:text-indigo-300' 
+                              : 'text-gray-600 dark:text-gray-400'
+                          }`}>
+                            {description}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
                   </div>
-                </div>
-                
-                <div className="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1 transition-colors duration-300">
-                  {([
-                    { mode: 'light' as ThemeMode, icon: Sun, label: 'Light' },
-                    { mode: 'dark' as ThemeMode, icon: Moon, label: 'Dark' },
-                    { mode: 'system' as ThemeMode, icon: Laptop, label: 'Auto' }
-                  ]).map(({ mode, icon: Icon, label }) => (
-                    <button
-                      key={mode}
-                      onClick={() => setTheme(mode)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        theme === mode
-                          ? 'bg-white dark:bg-gray-600 shadow-sm text-gray-900 dark:text-white'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      {label}
-                    </button>
-                  ))}
                 </div>
               </div>
             </div>
