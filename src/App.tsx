@@ -84,12 +84,12 @@ const NovenaTracker: React.FC = () => {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold text-gray-800 dark:text-white">Your Progress</h2>
             <div className="text-right">
-              <div className="text-2xl font-bold text-indigo-600">{completedDays.size}/{TOTAL_DAYS}</div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">days completed</div>
+              <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{completedDays.size}/{TOTAL_DAYS}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">days completed</div>
             </div>
           </div>
           
-          <ProgressBar percentage={completionPercentage} className="w-full bg-gray-200 rounded-full h-3 mb-4" />
+          <ProgressBar percentage={completionPercentage} className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3 mb-4 transition-colors duration-300" />
           
           {/* User's Intention Display */}
           {intention && (
@@ -114,7 +114,7 @@ const NovenaTracker: React.FC = () => {
               Day {currentDay}
             </span>
           </button>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             {getMysteryForDay(currentDay)} Mysteries • {getPhaseInfo(getCurrentPhase(currentDay)).title}
           </p>
         </div>
@@ -124,7 +124,7 @@ const NovenaTracker: React.FC = () => {
       {!startDate ? (
         // Initial Start Screen
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center transition-colors duration-300">
-          <Calendar className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
+          <Calendar className="w-16 h-16 text-indigo-600 dark:text-indigo-400 mx-auto mb-4" />
           <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Begin Your 54-Day Novena</h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             Start your spiritual journey of prayer and devotion. Set your intention and 
@@ -132,7 +132,7 @@ const NovenaTracker: React.FC = () => {
           </p>
           <button 
             onClick={handleStartNovena}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
+            className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors"
           >
             Start Novena
           </button>

@@ -46,11 +46,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Apply theme to document
   useEffect(() => {
     const root = document.documentElement;
+    const body = document.body;
     
     if (isDarkMode) {
       root.classList.add('dark');
+      body.style.backgroundColor = '#1f2937'; // gray-800
     } else {
       root.classList.remove('dark');
+      body.style.backgroundColor = '#ffffff';
     }
   }, [isDarkMode]);
 

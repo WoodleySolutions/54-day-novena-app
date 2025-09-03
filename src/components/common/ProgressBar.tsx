@@ -12,7 +12,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   return (
     <div className={className}>
       <div 
-        className="bg-gradient-to-r from-indigo-500 to-purple-600 h-3 rounded-full transition-all duration-300"
+        className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-400 dark:to-purple-500 h-3 rounded-full transition-all duration-300"
         style={{ width: `${percentage}%` }}
       />
     </div>

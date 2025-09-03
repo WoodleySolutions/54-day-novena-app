@@ -25,6 +25,10 @@
 - Enhanced Screen Wake Lock API integration
 - Improved iOS Safari compatibility detection
 - Better user experience with platform-appropriate feature availability
+- Fixed dark mode body background (no more white sidebar)
+- Improved dark mode text contrast for better readability
+- Enhanced color schemes for better dark mode visibility
+- Lighter purple/indigo colors in dark mode for better contrast
 
 ### 🐛 Bug Fixes
 - (None yet)

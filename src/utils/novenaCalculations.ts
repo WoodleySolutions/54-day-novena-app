@@ -24,10 +24,10 @@ export const getCycleInfo = (day: number): CycleInfo => {
 
 export const getMysteryColor = (mystery: MysteryType): string => {
   switch(mystery) {
-    case 'Joyful': return 'bg-amber-100 border-amber-300 text-amber-800';
-    case 'Sorrowful': return 'bg-purple-100 border-purple-300 text-purple-800';
-    case 'Glorious': return 'bg-blue-100 border-blue-300 text-blue-800';
-    default: return 'bg-gray-100 border-gray-300 text-gray-800';
+    case 'Joyful': return 'bg-amber-100 dark:bg-amber-900 border-amber-300 dark:border-amber-600 text-amber-800 dark:text-amber-200 transition-colors duration-300';
+    case 'Sorrowful': return 'bg-purple-100 dark:bg-purple-900 border-purple-300 dark:border-purple-600 text-purple-800 dark:text-purple-200 transition-colors duration-300';
+    case 'Glorious': return 'bg-blue-100 dark:bg-blue-900 border-blue-300 dark:border-blue-600 text-blue-800 dark:text-blue-200 transition-colors duration-300';
+    default: return 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 transition-colors duration-300';
   }
 };
 
