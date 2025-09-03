@@ -203,7 +203,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
             
             return (
               <p key={index} className={`
-                ${type === 'instruction' ? 'text-gray-700' : 'text-gray-800'}
+                ${type === 'instruction' ? 'text-gray-700 dark:text-gray-300' : 'text-gray-800 dark:text-gray-200'}
                 ${line.startsWith('•') ? 'ml-4' : ''}
                 ${line === '' ? 'h-2' : ''}
               `}>
@@ -244,7 +244,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
 
     return (
       <p className={`
-        ${type === 'prayer' ? 'font-medium leading-relaxed text-gray-800' : 'text-gray-700'}
+        ${type === 'prayer' ? 'font-medium leading-relaxed text-gray-800 dark:text-gray-200' : 'text-gray-700 dark:text-gray-300'}
         ${type === 'prayer' ? 'italic' : ''}
       `}>
         {content}
@@ -254,28 +254,28 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] flex flex-col transition-colors duration-300">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-600 transition-colors duration-300">
           <div>
-            <h2 className="text-xl font-semibold text-gray-800">{currentStep.title}</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{currentStep.title}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               Step {currentStepIndex + 1} of {prayerSteps.length}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
         {/* Progress bar */}
         <div className="px-6 py-2">
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 transition-colors duration-300">
             <div 
-              className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+              className="bg-indigo-600 dark:bg-indigo-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentStepIndex + 1) / prayerSteps.length) * 100}%` }}
             />
           </div>
@@ -284,14 +284,14 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           <div className={`
-            ${currentStep.type === 'prayer' ? 'bg-blue-50 border-l-4 border-blue-400 pl-6 py-4' : ''}
+            ${currentStep.type === 'prayer' ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-500 pl-6 py-4 transition-colors duration-300' : ''}
           `}>
             {renderContent(currentStep.content, currentStep.type)}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="border-t p-6">
+        <div className="border-t border-gray-200 dark:border-gray-600 p-6 transition-colors duration-300">
           <div className="flex justify-between">
             <button
               onClick={prevStep}
@@ -299,9 +299,9 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
                 ${isFirstStep 
-                  ? 'text-gray-400 cursor-not-allowed' 
-                  : 'text-gray-600 hover:bg-gray-100'
-                }
+                  ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed' 
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                } transition-colors duration-300
               `}
             >
               <ChevronLeft className="w-4 h-4" />
@@ -311,14 +311,14 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
             {isLastStep ? (
               <button
                 onClick={handleComplete}
-                className="bg-green-600 hover:bg-green-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors"
+                className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors duration-300"
               >
                 Amen 🙏
               </button>
             ) : (
               <button
                 onClick={nextStep}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-300"
               >
                 Next
                 <ChevronRight className="w-4 h-4" />
