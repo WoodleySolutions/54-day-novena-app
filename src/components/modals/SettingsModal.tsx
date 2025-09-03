@@ -12,7 +12,8 @@ import {
   showServiceWorkerTestNotification,
   checkChromeNotificationDetails,
   showSimpleAlert,
-  checkTWAInstallationDetails
+  checkTWAInstallationDetails,
+  forceTWAServiceWorkerRegistration
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -233,6 +234,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         className="text-sm bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200 px-3 py-1 rounded-md hover:bg-orange-200 dark:hover:bg-orange-800 transition-colors"
                       >
                         TWA Analysis
+                      </button>
+                      <button
+                        onClick={() => {
+                          try {
+                            console.log('Force SW Registration button clicked');
+                            forceTWAServiceWorkerRegistration();
+                          } catch (error) {
+                            console.error('Force SW registration error:', error);
+                            alert(`❌ Force registration failed: ${(error as Error).message}`);
+                          }
+                        }}
+                        className="text-sm bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-3 py-1 rounded-md hover:bg-red-200 dark:hover:bg-red-800 transition-colors"
+                      >
+                        Force SW Fix
                       </button>
                     </div>
                     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2">

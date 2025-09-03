@@ -674,23 +674,56 @@ export const checkTWAInstallationDetails = async () => {
     details += `❌ SW check error: ${(error as Error).message}\n\n`;
   }
   
-  // Check if we can register a Service Worker manually
-  details += `🔄 Manual SW Registration Test:\n`;
+  // Check if SW file exists and test registration
+  details += `🔄 Service Worker Registration Test:\n`;
   try {
     if ('serviceWorker' in navigator) {
       details += `• ServiceWorker API available: ✅\n`;
-      // Try to register a service worker (this will show if registration is blocked)
-      const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-      details += `• Manual registration test: ✅ SUCCESS\n`;
-      details += `• New registration scope: ${registration.scope}\n`;
+      
+      // First test if SW file is accessible
+      try {
+        const swResponse = await fetch('/sw.js');
+        if (swResponse.ok) {
+          details += `• SW file accessible (/sw.js): ✅\n`;
+          details += `• SW file size: ${swResponse.headers.get('content-length') || 'unknown'} bytes\n`;
+        } else {
+          details += `• SW file accessible (/sw.js): ❌ ${swResponse.status}\n`;
+          analysis.push(`Service Worker file not accessible: ${swResponse.status}`);
+        }
+      } catch (fetchError) {
+        details += `• SW file accessible (/sw.js): ❌ Network Error\n`;
+        details += `• Error: ${(fetchError as Error).message}\n`;
+        analysis.push(`SW file fetch failed: ${(fetchError as Error).message}`);
+      }
+      
+      // Try to register manually
+      try {
+        const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        details += `• Manual registration: ✅ SUCCESS\n`;
+        details += `• Registration scope: ${registration.scope}\n`;
+        details += `• Registration active: ${!!registration.active}\n`;
+        
+        // Check if this fixed the issue
+        const newRegistrations = await navigator.serviceWorker.getRegistrations();
+        details += `• Registrations after manual register: ${newRegistrations.length}\n`;
+        
+        if (newRegistrations.length > 0) {
+          details += `✅ MANUAL REGISTRATION FIXED THE ISSUE!\n`;
+          details += `The Service Worker can register, but wasn't registering automatically in TWA.\n\n`;
+          details += `🔧 Solution: Add manual SW registration in TWA context\n`;
+        }
+      } catch (regError) {
+        details += `• Manual registration: ❌ FAILED\n`;
+        details += `• Error: ${(regError as Error).message}\n`;
+        analysis.push(`Manual SW registration failed: ${(regError as Error).message}`);
+      }
     } else {
       details += `• ServiceWorker API available: ❌ NOT AVAILABLE\n`;
       analysis.push('Service Worker API not available in TWA');
     }
-  } catch (swError) {
-    details += `• Manual registration test: ❌ FAILED\n`;
-    details += `• Error: ${(swError as Error).message}\n`;
-    analysis.push(`SW manual registration failed: ${(swError as Error).message}`);
+  } catch (error) {
+    details += `• SW registration test failed: ${(error as Error).message}\n`;
+    analysis.push(`SW registration test failed: ${(error as Error).message}`);
   }
   
   // Show results
@@ -703,6 +736,106 @@ export const checkTWAInstallationDetails = async () => {
   console.log('TWA Analysis:', analysis);
   console.log('TWA Details:', details);
   console.log('=== END TWA INSTALLATION ANALYSIS ===');
+};
+
+// Force Service Worker registration specifically for TWA
+export const forceTWAServiceWorkerRegistration = async () => {
+  console.log('=== FORCE TWA SERVICE WORKER REGISTRATION ===');
+  
+  try {
+    if (!('serviceWorker' in navigator)) {
+      alert('❌ Service Worker not supported in this environment');
+      return false;
+    }
+
+    if (!isTrustedWebActivity()) {
+      alert('ℹ️ This function is specifically for TWA environments. Your browser may already have SW registered.');
+      return false;
+    }
+
+    // Check current registrations
+    const beforeRegistrations = await navigator.serviceWorker.getRegistrations();
+    console.log('Registrations before force registration:', beforeRegistrations.length);
+
+    alert('🔄 Attempting to force Service Worker registration...');
+
+    // Try multiple registration approaches
+    let success = false;
+    let registration: ServiceWorkerRegistration | undefined;
+
+    // Approach 1: Standard registration
+    try {
+      registration = await navigator.serviceWorker.register('/sw.js', { 
+        scope: '/',
+        updateViaCache: 'none' // Force fresh registration
+      });
+      success = true;
+      console.log('Standard registration succeeded:', registration);
+    } catch (error1) {
+      console.log('Standard registration failed:', error1);
+      
+      // Approach 2: Try different scope
+      try {
+        registration = await navigator.serviceWorker.register('/sw.js', { 
+          scope: './',
+          updateViaCache: 'none'
+        });
+        success = true;
+        console.log('Alternative scope registration succeeded:', registration);
+      } catch (error2) {
+        console.log('Alternative scope registration failed:', error2);
+        
+        // Approach 3: Try absolute path
+        try {
+          registration = await navigator.serviceWorker.register(`${window.location.origin}/sw.js`);
+          success = true;
+          console.log('Absolute path registration succeeded:', registration);
+        } catch (error3) {
+          console.log('All registration attempts failed:', error3);
+        }
+      }
+    }
+
+    if (success && registration) {
+      // Wait for the service worker to become active
+      await new Promise((resolve) => {
+        if (registration!.active) {
+          resolve(registration!.active);
+        } else {
+          registration!.addEventListener('statechange', () => {
+            if (registration!.active) {
+              resolve(registration!.active);
+            }
+          });
+        }
+      });
+
+      // Check final registration state
+      const afterRegistrations = await navigator.serviceWorker.getRegistrations();
+      
+      let message = `✅ SUCCESS! Service Worker registration forced:\n\n`;
+      message += `• Registrations: ${beforeRegistrations.length} → ${afterRegistrations.length}\n`;
+      message += `• Scope: ${registration.scope}\n`;
+      message += `• Active: ${!!registration.active}\n`;
+      message += `• State: ${registration.active?.state}\n\n`;
+      message += `🔔 Notifications should now work!\nTry the "Test Notification" button.`;
+      
+      alert(message);
+      
+      // Store that we've force-registered for this session
+      sessionStorage.setItem('twa-sw-force-registered', 'true');
+      
+      return true;
+    } else {
+      alert('❌ Failed to register Service Worker. Check console for details.');
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('Force registration error:', error);
+    alert(`❌ Force registration failed: ${(error as Error).message}`);
+    return false;
+  }
 };
 
 // Check for Android system-level notification restrictions
