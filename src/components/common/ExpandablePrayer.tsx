@@ -19,22 +19,22 @@ export const ExpandablePrayer: React.FC<ExpandablePrayerProps> = ({
   };
 
   return (
-    <div className={`border border-gray-200 rounded-lg bg-gray-50 ${className}`}>
+    <div className={`border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 transition-colors duration-300 ${className}`}>
       <button
         onClick={toggleExpanded}
-        className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 transition-colors rounded-lg"
+        className="w-full flex items-center justify-between p-3 text-left hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300 rounded-lg"
       >
-        <span className="font-medium text-gray-800">{prayerName}</span>
+        <span className="font-medium text-gray-800 dark:text-gray-200">{prayerName}</span>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-gray-600" />
+          <ChevronUp className="w-4 h-4 text-gray-600 dark:text-gray-400" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-gray-600" />
+          <ChevronDown className="w-4 h-4 text-gray-600 dark:text-gray-400" />
         )}
       </button>
       
       {isExpanded && (
-        <div className="px-3 pb-3 border-t border-gray-200">
-          <div className="pt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-line italic">
+        <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-600 transition-colors duration-300">
+          <div className="pt-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line italic">
             {prayerText}
           </div>
         </div>
