@@ -10,7 +10,8 @@ import {
   getReminderTimePreference,
   setReminderTimePreference,
   showTestNotification,
-  showServiceWorkerTestNotification
+  showServiceWorkerTestNotification,
+  checkChromeNotificationDetails
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -183,7 +184,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                         onClick={() => showServiceWorkerTestNotification()}
                         className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-md hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
                       >
-                        Test Service Worker
+                        Test SW
+                      </button>
+                      <button
+                        onClick={() => checkChromeNotificationDetails()}
+                        className="text-sm bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-3 py-1 rounded-md hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
+                      >
+                        Debug Info
                       </button>
                     </div>
                     <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2">

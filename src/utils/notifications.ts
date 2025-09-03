@@ -171,89 +171,167 @@ export const initializeNotifications = () => {
 
 // Test notification function for immediate feedback
 export const showTestNotification = () => {
+  console.log('=== NOTIFICATION TEST START ===');
   console.log('showTestNotification called');
+  
+  // Environment detection
+  console.log('User Agent:', navigator.userAgent);
+  console.log('Display mode:', window.matchMedia('(display-mode: standalone)').matches ? 'standalone' : 'browser');
+  console.log('Is TWA:', isTrustedWebActivity());
+  console.log('Platform:', navigator.platform);
+  console.log('Vendor:', navigator.vendor);
+  
+  // Feature detection
   console.log('Notification support:', 'Notification' in window);
-  console.log('Permission state:', Notification.permission);
   console.log('Service Worker support:', 'serviceWorker' in navigator);
+  console.log('Permission state:', Notification.permission);
+  
+  // Permission details
+  const permState = getNotificationPermission();
+  console.log('Permission object:', permState);
   
   if (!('Notification' in window)) {
-    console.error('Notifications not supported in this browser');
+    console.error('❌ Notifications not supported in this browser');
+    alert('Notifications not supported in this browser/environment');
     return false;
   }
 
-  if (getNotificationPermission().granted) {
-    try {
-      console.log('Attempting to create notification...');
-      const notification = new Notification('54-Day Novena Reminder - Test', {
-        body: "This is a test notification. Your daily reminders are working! 🙏",
-        icon: '/android-chrome-192x192.png',
-        badge: '/favicon-32x32.png',
-        tag: 'novena-test',
-        requireInteraction: false
-      });
+  if (!permState.granted) {
+    console.log('❌ Permission not granted. Current permission:', Notification.permission);
+    alert(`Permission not granted. Current state: ${Notification.permission}`);
+    return false;
+  }
 
-      console.log('Notification created successfully');
+  try {
+    console.log('✅ Creating notification...');
+    const notification = new Notification('54-Day Novena Test', {
+      body: "Test notification - if you see this, basic notifications work! 🙏",
+      icon: '/android-chrome-192x192.png',
+      badge: '/favicon-32x32.png',
+      tag: 'novena-test',
+      requireInteraction: false,
+      silent: false
+    });
 
-      notification.onclick = () => {
-        console.log('Notification clicked');
-        window.focus();
-        notification.close();
-      };
+    console.log('✅ Notification object created:', notification);
 
-      notification.onerror = (error) => {
-        console.error('Notification error:', error);
-      };
+    notification.onclick = () => {
+      console.log('📱 Notification clicked');
+      window.focus();
+      notification.close();
+    };
 
-      notification.onshow = () => {
-        console.log('Notification shown');
-      };
+    notification.onerror = (error) => {
+      console.error('❌ Notification error:', error);
+      alert('Notification error: ' + error);
+    };
 
-      setTimeout(() => {
-        console.log('Closing notification after 10 seconds');
-        notification.close();
-      }, 10000);
-      
-      return true;
-    } catch (error) {
-      console.error('Error creating notification:', error);
-      return false;
-    }
-  } else {
-    console.log('Permission not granted. Current permission:', Notification.permission);
+    notification.onshow = () => {
+      console.log('✅ Notification shown successfully');
+    };
+
+    notification.onclose = () => {
+      console.log('🔔 Notification closed');
+    };
+
+    // Close after 15 seconds
+    setTimeout(() => {
+      console.log('⏰ Auto-closing notification after 15 seconds');
+      notification.close();
+    }, 15000);
+    
+    console.log('=== NOTIFICATION TEST END ===');
+    return true;
+  } catch (error) {
+    console.error('❌ Error creating notification:', error);
+    alert('Error creating notification: ' + (error as Error).message);
+    console.log('=== NOTIFICATION TEST END (ERROR) ===');
     return false;
   }
 };
 
 // Alternative test using Service Worker
 export const showServiceWorkerTestNotification = async () => {
-  console.log('showServiceWorkerTestNotification called');
+  console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
   
-  if (!('serviceWorker' in navigator) || !('showNotification' in ServiceWorkerRegistration.prototype)) {
-    console.log('Service worker notifications not supported');
+  // Check service worker support
+  console.log('Service Worker in navigator:', 'serviceWorker' in navigator);
+  console.log('showNotification supported:', 'showNotification' in ServiceWorkerRegistration.prototype);
+  
+  if (!('serviceWorker' in navigator)) {
+    console.error('❌ Service Worker not supported');
+    alert('Service Worker not supported in this environment');
+    return false;
+  }
+
+  if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
+    console.error('❌ Service Worker notifications not supported');
+    alert('Service Worker notifications not supported');
     return false;
   }
 
   try {
+    console.log('🔄 Getting service worker registration...');
     const registration = await navigator.serviceWorker.ready;
-    console.log('Service worker ready, attempting to show notification');
+    console.log('✅ Service worker ready:', registration);
+    console.log('SW scope:', registration.scope);
+    console.log('SW active:', !!registration.active);
     
+    console.log('🔔 Attempting to show service worker notification...');
     await registration.showNotification('54-Day Novena - SW Test', {
-      body: "This is a service worker test notification! 🙏",
+      body: "Service Worker test - if you see this, SW notifications work! 🙏",
       icon: '/android-chrome-192x192.png',
       badge: '/favicon-32x32.png',
       tag: 'novena-sw-test',
-      requireInteraction: true,
+      requireInteraction: false,
+      silent: false,
       vibrate: [200, 100, 200],
       actions: [
-        { action: 'open', title: 'Open App' },
-        { action: 'close', title: 'Close' }
-      ]
+        { action: 'open', title: '🙏 Pray' },
+        { action: 'close', title: '❌ Close' }
+      ],
+      data: {
+        test: true,
+        timestamp: Date.now()
+      }
     });
     
-    console.log('Service worker notification shown');
+    console.log('✅ Service worker notification request sent');
+    console.log('=== SERVICE WORKER NOTIFICATION TEST END ===');
     return true;
   } catch (error) {
-    console.error('Service worker notification error:', error);
+    console.error('❌ Service worker notification error:', error);
+    alert('Service Worker error: ' + (error as Error).message);
+    console.log('=== SERVICE WORKER NOTIFICATION TEST END (ERROR) ===');
     return false;
   }
+};
+
+// Add a Chrome-specific permission helper
+export const checkChromeNotificationDetails = () => {
+  console.log('=== CHROME NOTIFICATION DETAILS ===');
+  
+  // Check if we're in Chrome
+  const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+  console.log('Is Chrome browser:', isChrome);
+  
+  // Check permission
+  console.log('Notification.permission:', Notification.permission);
+  console.log('Permission timestamp:', localStorage.getItem('notification-permission-timestamp'));
+  
+  // Check if we have any stored notification data
+  console.log('Stored reminder time:', getReminderTimePreference());
+  console.log('Notifications disabled:', areNotificationsDisabled());
+  
+  // Try to get detailed permission info if available
+  if ('permissions' in navigator) {
+    navigator.permissions.query({name: 'notifications'}).then(result => {
+      console.log('Permissions API result:', result.state);
+      console.log('Permission object:', result);
+    }).catch(err => {
+      console.log('Permissions API error:', err);
+    });
+  }
+  
+  console.log('=== END CHROME NOTIFICATION DETAILS ===');
 };
