@@ -278,54 +278,241 @@ export const showTestNotification = () => {
 export const showServiceWorkerTestNotification = async () => {
   console.log('=== SERVICE WORKER NOTIFICATION TEST START ===');
   
+  // Environment detection
+  console.log('🌍 Environment Check:');
+  console.log('User Agent:', navigator.userAgent);
+  console.log('Platform:', navigator.platform);
+  console.log('Vendor:', navigator.vendor);
+  console.log('Language:', navigator.language);
+  console.log('Online:', navigator.onLine);
+  console.log('Cookie enabled:', navigator.cookieEnabled);
+  
+  // PWA/TWA detection
+  console.log('📱 PWA/TWA Detection:');
+  console.log('Display mode standalone:', window.matchMedia('(display-mode: standalone)').matches);
+  console.log('Display mode fullscreen:', window.matchMedia('(display-mode: fullscreen)').matches);
+  console.log('Display mode minimal-ui:', window.matchMedia('(display-mode: minimal-ui)').matches);
+  console.log('Display mode browser:', window.matchMedia('(display-mode: browser)').matches);
+  console.log('Is TWA (our detection):', isTrustedWebActivity());
+  
   // Check service worker support
+  console.log('🔧 Service Worker Support:');
   console.log('Service Worker in navigator:', 'serviceWorker' in navigator);
   console.log('showNotification supported:', 'showNotification' in ServiceWorkerRegistration.prototype);
+  console.log('getNotifications supported:', 'getNotifications' in ServiceWorkerRegistration.prototype);
   
   if (!('serviceWorker' in navigator)) {
     console.error('❌ Service Worker not supported');
-    alert('Service Worker not supported in this environment');
+    alert('❌ Service Worker not supported in this environment');
     return false;
   }
 
   if (!('showNotification' in ServiceWorkerRegistration.prototype)) {
     console.error('❌ Service Worker notifications not supported');
-    alert('Service Worker notifications not supported');
+    alert('❌ Service Worker notifications not supported');
     return false;
   }
 
   try {
-    console.log('🔄 Getting service worker registration...');
-    const registration = await navigator.serviceWorker.ready;
-    console.log('✅ Service worker ready:', registration);
-    console.log('SW scope:', registration.scope);
-    console.log('SW active:', !!registration.active);
+    console.log('🔄 Service Worker Analysis:');
     
-    console.log('🔔 Attempting to show service worker notification...');
-    await registration.showNotification('54-Day Novena - SW Test', {
-      body: "Service Worker test - if you see this, SW notifications work! 🙏",
-      icon: '/android-chrome-192x192.png',
-      badge: '/favicon-32x32.png',
-      tag: 'novena-sw-test',
-      requireInteraction: false,
-      silent: false,
-      vibrate: [200, 100, 200],
-      actions: [
-        { action: 'open', title: '🙏 Pray' },
-        { action: 'close', title: '❌ Close' }
-      ],
-      data: {
-        test: true,
-        timestamp: Date.now()
-      }
+    // First check if we have a service worker at all
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    console.log('📋 SW registrations found:', registrations.length);
+    
+    registrations.forEach((reg, index) => {
+      console.log(`Registration ${index}:`, {
+        scope: reg.scope,
+        active: !!reg.active,
+        installing: !!reg.installing,
+        waiting: !!reg.waiting,
+        updatefound: reg.updatefound
+      });
     });
     
-    console.log('✅ Service worker notification request sent');
+    if (registrations.length === 0) {
+      console.error('❌ No service worker registrations found');
+      alert('❌ No service worker found. The app might not be properly installed as a PWA.');
+      return false;
+    }
+    
+    const registration = await navigator.serviceWorker.ready;
+    console.log('✅ Service worker ready:', {
+      scope: registration.scope,
+      active: !!registration.active,
+      installing: !!registration.installing,
+      waiting: !!registration.waiting
+    });
+    
+    if (registration.active) {
+      console.log('🔗 Active SW details:', {
+        scriptURL: registration.active.scriptURL,
+        state: registration.active.state
+      });
+    }
+    
+    // Permission checks at multiple levels
+    console.log('🔐 Permission Analysis:');
+    console.log('Notification.permission:', Notification.permission);
+    
+    if ('permissions' in navigator) {
+      try {
+        const permission = await navigator.permissions.query({name: 'notifications'});
+        console.log('Permissions API state:', permission.state);
+        console.log('Permission object:', permission);
+        
+        // Listen for permission changes
+        permission.onchange = () => {
+          console.log('Permission changed to:', permission.state);
+        };
+        
+        if (permission.state !== 'granted') {
+          alert(`❌ Permission not granted at Permissions API level: ${permission.state}\nNotification.permission: ${Notification.permission}`);
+          return false;
+        }
+      } catch (permError) {
+        console.error('Permissions API query failed:', permError);
+      }
+    }
+    
+    // Clear any existing test notifications first
+    console.log('🧹 Clearing existing test notifications...');
+    try {
+      const existingBefore = await registration.getNotifications();
+      console.log(`Found ${existingBefore.length} existing notifications`);
+      
+      for (const notif of existingBefore) {
+        if (notif.tag && notif.tag.includes('test')) {
+          console.log(`Closing test notification: ${notif.title} (${notif.tag})`);
+          notif.close();
+        }
+      }
+      
+      // Wait a moment for closures to take effect
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (clearError) {
+      console.warn('Could not clear existing notifications:', clearError);
+    }
+    
+    console.log('🔔 Attempting notification sequence...');
+    
+    // Test 1: Ultra-minimal notification
+    console.log('Test 1: Ultra-minimal notification...');
+    try {
+      await registration.showNotification('Test 1', {
+        tag: 'test-1-minimal'
+      });
+      console.log('✅ Minimal notification call completed');
+    } catch (minimalError) {
+      console.error('❌ Minimal notification failed:', minimalError);
+      alert(`❌ Even minimal notification failed: ${(minimalError as Error).message}`);
+      return false;
+    }
+    
+    // Short delay between tests
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Test 2: Simple notification with body
+    console.log('Test 2: Simple notification with body...');
+    try {
+      await registration.showNotification('Test 2 - Simple', {
+        body: 'Simple test body',
+        tag: 'test-2-simple'
+      });
+      console.log('✅ Simple notification call completed');
+    } catch (simpleError) {
+      console.error('❌ Simple notification failed:', simpleError);
+    }
+    
+    // Short delay between tests
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Test 3: Rich notification with all options
+    console.log('Test 3: Rich notification...');
+    try {
+      await registration.showNotification('Test 3 - Rich Notification', {
+        body: "Rich test with all options! 🙏 If you see this, everything works!",
+        icon: '/android-chrome-192x192.png',
+        badge: '/favicon-32x32.png',
+        tag: 'test-3-rich',
+        requireInteraction: false,
+        silent: false,
+        renotify: true,
+        timestamp: Date.now(),
+        data: {
+          test: true,
+          timestamp: Date.now(),
+          source: 'service-worker-test'
+        }
+      });
+      console.log('✅ Rich notification call completed');
+    } catch (richError) {
+      console.error('❌ Rich notification failed:', richError);
+    }
+    
+    // Wait for notifications to potentially appear
+    console.log('⏱️ Waiting 2 seconds for notifications to appear...');
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Check notification status
+    console.log('📊 Notification Status Check:');
+    try {
+      const activeNotifications = await registration.getNotifications();
+      console.log(`📬 Active notifications found: ${activeNotifications.length}`);
+      
+      let testNotificationCount = 0;
+      activeNotifications.forEach((notif, index) => {
+        console.log(`Notification ${index}:`, {
+          title: notif.title,
+          body: notif.body,
+          tag: notif.tag,
+          timestamp: notif.timestamp,
+          data: notif.data
+        });
+        
+        if (notif.tag && notif.tag.startsWith('test-')) {
+          testNotificationCount++;
+        }
+      });
+      
+      // Detailed result reporting
+      let resultMessage = `📊 Notification Test Results:\n\n`;
+      resultMessage += `• Total active notifications: ${activeNotifications.length}\n`;
+      resultMessage += `• Test notifications found: ${testNotificationCount}\n`;
+      resultMessage += `• Permissions API: ${await navigator.permissions.query({name: 'notifications'}).then(p => p.state).catch(() => 'unavailable')}\n`;
+      resultMessage += `• Notification.permission: ${Notification.permission}\n`;
+      resultMessage += `• Is TWA: ${isTrustedWebActivity()}\n`;
+      resultMessage += `• User Agent: ${navigator.userAgent.includes('wv') ? 'WebView' : 'Regular'}\n\n`;
+      
+      if (testNotificationCount === 0) {
+        resultMessage += `❌ NO TEST NOTIFICATIONS VISIBLE\n\n`;
+        resultMessage += `Possible causes:\n`;
+        resultMessage += `• Android Do Not Disturb mode enabled\n`;
+        resultMessage += `• Chrome notifications disabled in Android Settings\n`;
+        resultMessage += `• App notification channel disabled\n`;
+        resultMessage += `• Battery optimization blocking notifications\n`;
+        resultMessage += `• Notification grouped/hidden by system\n`;
+        resultMessage += `• TWA notification channel issues\n\n`;
+        resultMessage += `Try checking:\n`;
+        resultMessage += `• Android Settings > Apps > Chrome > Notifications\n`;
+        resultMessage += `• Android Settings > Notifications > Do Not Disturb\n`;
+        resultMessage += `• Pull down notification panel manually`;
+      } else {
+        resultMessage += `✅ SUCCESS! ${testNotificationCount} notifications are active`;
+      }
+      
+      alert(resultMessage);
+      
+    } catch (statusError) {
+      console.error('❌ Could not check notification status:', statusError);
+      alert(`❌ Could not check notification status: ${(statusError as Error).message}`);
+    }
+    
     console.log('=== SERVICE WORKER NOTIFICATION TEST END ===');
     return true;
   } catch (error) {
-    console.error('❌ Service worker notification error:', error);
-    alert('Service Worker error: ' + (error as Error).message);
+    console.error('❌ Service worker notification test failed:', error);
+    alert('❌ Service Worker test failed: ' + (error as Error).message);
     console.log('=== SERVICE WORKER NOTIFICATION TEST END (ERROR) ===');
     return false;
   }
@@ -388,15 +575,18 @@ export const forceRequestNotificationPermission = async (): Promise<boolean> => 
     
     if (permission === 'granted') {
       alert('✅ Permission granted successfully!');
-      // Test with immediate notification
-      try {
-        const testNotif = new Notification('Permission Success!', {
-          body: 'Notifications should now work! 🎉',
-          icon: '/android-chrome-192x192.png'
-        });
-        setTimeout(() => testNotif.close(), 5000);
-      } catch (err) {
-        console.error('Immediate test notification failed:', err);
+      // Test with Service Worker instead of regular notification for TWA compatibility
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          await registration.showNotification('Permission Success!', {
+            body: 'Notifications should now work! 🎉',
+            icon: '/android-chrome-192x192.png',
+            tag: 'permission-success'
+          });
+        } catch (err) {
+          console.error('SW test notification failed:', err);
+        }
       }
       return true;
     } else {
@@ -408,4 +598,70 @@ export const forceRequestNotificationPermission = async (): Promise<boolean> => 
     alert(`Permission request failed: ${(error as Error).message}`);
     return false;
   }
+};
+
+// Check for Android system-level notification restrictions
+export const checkAndroidNotificationRestrictions = async () => {
+  console.log('=== ANDROID NOTIFICATION RESTRICTIONS CHECK ===');
+  
+  let restrictions = [];
+  
+  // Check if we're on Android
+  const isAndroid = /Android/i.test(navigator.userAgent);
+  console.log('Is Android:', isAndroid);
+  
+  if (!isAndroid) {
+    alert('Not on Android - this check is for Android devices only');
+    return;
+  }
+  
+  // Check basic notification permission
+  const basicPerm = Notification.permission;
+  console.log('Basic notification permission:', basicPerm);
+  
+  if (basicPerm !== 'granted') {
+    restrictions.push('Basic notification permission not granted');
+  }
+  
+  // Check Permissions API if available
+  if ('permissions' in navigator) {
+    try {
+      const permResult = await navigator.permissions.query({name: 'notifications'});
+      console.log('Permissions API result:', permResult.state);
+      if (permResult.state !== 'granted') {
+        restrictions.push(`Permissions API shows: ${permResult.state}`);
+      }
+    } catch (err) {
+      restrictions.push('Permissions API query failed');
+      console.error('Permissions API error:', err);
+    }
+  } else {
+    restrictions.push('Permissions API not available');
+  }
+  
+  // Check Service Worker availability
+  if (!('serviceWorker' in navigator)) {
+    restrictions.push('Service Worker not available');
+  } else {
+    try {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      if (registrations.length === 0) {
+        restrictions.push('No Service Worker registered');
+      } else {
+        console.log('Service Worker registrations found:', registrations.length);
+      }
+    } catch (err) {
+      restrictions.push('Service Worker check failed');
+    }
+  }
+  
+  // Show results
+  if (restrictions.length === 0) {
+    alert('✅ No obvious notification restrictions detected.\n\nPossible Android system issues:\n• Do Not Disturb mode enabled\n• App notification channel disabled in Settings\n• Battery optimization blocking notifications\n• Chrome notifications disabled in device Settings');
+  } else {
+    alert(`❌ Found ${restrictions.length} potential issues:\n\n${restrictions.join('\n')}\n\nCheck your device settings!`);
+  }
+  
+  console.log('Restriction analysis:', restrictions);
+  console.log('=== END ANDROID RESTRICTIONS CHECK ===');
 };
