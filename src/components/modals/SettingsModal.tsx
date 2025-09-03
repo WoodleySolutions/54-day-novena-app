@@ -9,7 +9,8 @@ import {
   enableNotifications,
   getReminderTimePreference,
   setReminderTimePreference,
-  showTestNotification
+  showTestNotification,
+  showServiceWorkerTestNotification
 } from '../../utils/notifications';
 import {
   isWakeLockSupported,
@@ -171,12 +172,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       You'll receive daily reminders to pray your novena at this time.
                     </p>
-                    <button
-                      onClick={() => showTestNotification()}
-                      className="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
-                    >
-                      Test Notification
-                    </button>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => showTestNotification()}
+                        className="text-sm bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-md hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors"
+                      >
+                        Test Basic
+                      </button>
+                      <button
+                        onClick={() => showServiceWorkerTestNotification()}
+                        className="text-sm bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-md hover:bg-green-200 dark:hover:bg-green-800 transition-colors"
+                      >
+                        Test Service Worker
+                      </button>
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2">
+                      <strong>Android App Note:</strong> If notifications don't work, check Chrome's notification permissions in your device settings, as the app inherits Chrome's permissions.
+                    </div>
                   </div>
                 )}
                 

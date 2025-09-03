@@ -146,6 +146,18 @@ export const setReminderTimePreference = (time: string): void => {
   localStorage.setItem('reminder-time', time);
 };
 
+// Detect if we're running in a TWA
+export const isTrustedWebActivity = (): boolean => {
+  return (
+    // Check if it's in standalone mode (like TWA)
+    window.matchMedia('(display-mode: standalone)').matches ||
+    // Check for TWA-specific user agent
+    navigator.userAgent.includes('wv') || // WebView
+    // Check if it's an Android app context
+    (window.navigator && 'share' in window.navigator && /Android/i.test(navigator.userAgent))
+  );
+};
+
 // Initialize notifications on app start
 export const initializeNotifications = () => {
   // Only initialize if user has granted permission and hasn't disabled notifications
@@ -159,21 +171,89 @@ export const initializeNotifications = () => {
 
 // Test notification function for immediate feedback
 export const showTestNotification = () => {
+  console.log('showTestNotification called');
+  console.log('Notification support:', 'Notification' in window);
+  console.log('Permission state:', Notification.permission);
+  console.log('Service Worker support:', 'serviceWorker' in navigator);
+  
+  if (!('Notification' in window)) {
+    console.error('Notifications not supported in this browser');
+    return false;
+  }
+
   if (getNotificationPermission().granted) {
-    const notification = new Notification('54-Day Novena Reminder - Test', {
-      body: "This is a test notification. Your daily reminders are working! 🙏",
+    try {
+      console.log('Attempting to create notification...');
+      const notification = new Notification('54-Day Novena Reminder - Test', {
+        body: "This is a test notification. Your daily reminders are working! 🙏",
+        icon: '/android-chrome-192x192.png',
+        badge: '/favicon-32x32.png',
+        tag: 'novena-test',
+        requireInteraction: false
+      });
+
+      console.log('Notification created successfully');
+
+      notification.onclick = () => {
+        console.log('Notification clicked');
+        window.focus();
+        notification.close();
+      };
+
+      notification.onerror = (error) => {
+        console.error('Notification error:', error);
+      };
+
+      notification.onshow = () => {
+        console.log('Notification shown');
+      };
+
+      setTimeout(() => {
+        console.log('Closing notification after 10 seconds');
+        notification.close();
+      }, 10000);
+      
+      return true;
+    } catch (error) {
+      console.error('Error creating notification:', error);
+      return false;
+    }
+  } else {
+    console.log('Permission not granted. Current permission:', Notification.permission);
+    return false;
+  }
+};
+
+// Alternative test using Service Worker
+export const showServiceWorkerTestNotification = async () => {
+  console.log('showServiceWorkerTestNotification called');
+  
+  if (!('serviceWorker' in navigator) || !('showNotification' in ServiceWorkerRegistration.prototype)) {
+    console.log('Service worker notifications not supported');
+    return false;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    console.log('Service worker ready, attempting to show notification');
+    
+    await registration.showNotification('54-Day Novena - SW Test', {
+      body: "This is a service worker test notification! 🙏",
       icon: '/android-chrome-192x192.png',
       badge: '/favicon-32x32.png',
-      tag: 'novena-test'
+      tag: 'novena-sw-test',
+      requireInteraction: true,
+      vibrate: [200, 100, 200],
+      actions: [
+        { action: 'open', title: 'Open App' },
+        { action: 'close', title: 'Close' }
+      ]
     });
-
-    notification.onclick = () => {
-      window.focus();
-      notification.close();
-    };
-
-    setTimeout(() => notification.close(), 10000);
+    
+    console.log('Service worker notification shown');
     return true;
+  } catch (error) {
+    console.error('Service worker notification error:', error);
+    return false;
   }
-  return false;
 };
