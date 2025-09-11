@@ -22,9 +22,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:fresh": "npm run clear-cache && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "clear-cache": "rd /s /q node_modules\\.cache 2>nul || rmdir /s /q node_modules\\.cache 2>/dev/null || true"
   },
   "eslintConfig": {
     "extends": [

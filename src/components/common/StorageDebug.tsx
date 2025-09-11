@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getStorageInfo, clearNovenaData } from '../../utils/localStorage';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { clearAllAppData, debugLocalStorage, forceCacheReload } from '../../utils/devHelpers';
 
 interface StorageDebugProps {
   isVisible?: boolean;
@@ -60,12 +62,32 @@ export const StorageDebug: React.FC<StorageDebugProps> = ({ isVisible = false })
                 {JSON.stringify(getStoredData(), null, 2)}
               </pre>
             </div>
-            <button
-              onClick={handleClearStorage}
-              className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs mt-2 w-full"
-            >
-              Clear Storage
-            </button>
+            <div className="space-y-1 mt-2">
+              <button
+                onClick={handleClearStorage}
+                className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs w-full"
+              >
+                Clear Novena Data
+              </button>
+              <button
+                onClick={() => clearAllAppData()}
+                className="bg-orange-600 hover:bg-orange-700 px-2 py-1 rounded text-xs w-full"
+              >
+                Clear ALL + Reload
+              </button>
+              <button
+                onClick={() => forceCacheReload()}
+                className="bg-blue-600 hover:bg-blue-700 px-2 py-1 rounded text-xs w-full"
+              >
+                Force Cache Reload
+              </button>
+              <button
+                onClick={() => debugLocalStorage()}
+                className="bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded text-xs w-full"
+              >
+                Debug Console
+              </button>
+            </div>
           </>
         )}
       </div>

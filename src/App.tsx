@@ -14,6 +14,7 @@ import { DayButton } from './components/NovenaTracker/DayButton';
 import { TrialBanner } from './components/common/TrialBanner';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
+import './utils/devHelpers'; // Load development utilities
 import { StorageDebug } from './components/common/StorageDebug';
 import { TrialDebug } from './components/common/TrialDebug';
 import { PremiumGuard } from './components/common/PremiumGuard';
