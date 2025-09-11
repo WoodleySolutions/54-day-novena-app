@@ -8,8 +8,10 @@
  * This helps avoid cache issues during development
  */
 export const clearAllAppData = () => {
-  // Allow in both dev and production for testing
-  console.log('🧹 Clearing all app data...');
+  if (process.env.NODE_ENV !== 'development') {
+    console.warn('clearAllAppData is only available in development mode');
+    return;
+  }
 
   const keysToRemove = [
     // Main app data
@@ -29,7 +31,7 @@ export const clearAllAppData = () => {
     'novena-data' // legacy key
   ];
 
-  console.log('🧹 Clearing all app data...');
+  // Clearing all app data...
   
   // Remove specific keys
   keysToRemove.forEach(key => {
@@ -121,8 +123,5 @@ if (process.env.NODE_ENV === 'development') {
   (window as any).debugLocalStorage = debugLocalStorage;
   (window as any).forceCacheReload = forceCacheReload;
   
-  console.log('🛠️ Development helpers loaded:');
-  console.log('  • clearAllAppData() - Clear all app data and reload');
-  console.log('  • debugLocalStorage() - Show current localStorage data');
-  console.log('  • forceCacheReload() - Force cache reload');
+  // Development helpers loaded and available globally
 }
