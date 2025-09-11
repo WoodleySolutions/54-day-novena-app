@@ -15,7 +15,6 @@ export const AppFooter: React.FC = () => {
       setTimeout(() => setShowEmailCopied(false), 3000);
     } catch (err) {
       // Clipboard failed, that's okay - mailto will still work
-      console.log('Could not copy to clipboard, but mailto should still work');
     }
     
     // Let the mailto link work normally

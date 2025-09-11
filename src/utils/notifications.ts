@@ -109,7 +109,7 @@ export const scheduleDailyReminder = (hour: number = 9, minute: number = 0) => {
     }
   }, timeUntilNotification);
 
-  console.log(`Reminder scheduled for ${scheduledTime.toLocaleString()}`);
+  // Reminder scheduled successfully
 };
 
 export const clearNotifications = () => {
@@ -144,6 +144,6 @@ export const initializeNotifications = () => {
     const timePreference = getReminderTimePreference();
     const [hour, minute] = timePreference.split(':').map(Number);
     scheduleDailyReminder(hour, minute);
-    console.log('Notifications initialized with preference:', timePreference);
+    // Notifications initialized with user preference
   }
 };

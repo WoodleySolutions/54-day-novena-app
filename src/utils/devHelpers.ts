@@ -8,10 +8,8 @@
  * This helps avoid cache issues during development
  */
 export const clearAllAppData = () => {
-  if (process.env.NODE_ENV !== 'development') {
-    console.warn('clearAllAppData is only available in development mode');
-    return;
-  }
+  // Allow in both dev and production for testing
+  console.log('🧹 Clearing all app data...');
 
   const keysToRemove = [
     // Main app data
@@ -57,9 +55,19 @@ export const clearAllAppData = () => {
     }
   });
 
-  console.log('🔄 Reloading page to clear cache...');
+  console.log('🔄 Forcing hard reload to clear cache...');
   
   // Force a hard reload to clear any cached components
+  // Use multiple methods to ensure cache is busted
+  if ('caches' in window) {
+    caches.keys().then(names => {
+      names.forEach(name => {
+        caches.delete(name);
+      });
+    });
+  }
+  
+  // Force reload from server, not cache
   window.location.reload();
 };
 

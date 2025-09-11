@@ -14,6 +14,8 @@ The 54-Day Novena Tracker helps Catholics complete the powerful devotion popular
 - **Automatic mystery rotation** through Joyful, Sorrowful, Glorious, and Luminous mysteries
 - **Personal intention setting** integrated into prayer flow
 - **Data persistence** across browser sessions using localStorage
+- **Free trial system** with premium subscription features
+- **Dark mode support** with automatic theme detection
 
 ### Prayer Experience
 - Complete rosary structure from opening prayers to closing prayers
@@ -80,7 +82,7 @@ REACT_APP_GA_TRACKING_ID=G-XXXXXXXXXX
 npm start
 ```
 
-The application will open at `http://localhost:3000`
+The application will open at `http://localhost:3010` (configured in `.env`)
 
 ### Environment Variables
 
@@ -104,16 +106,26 @@ Builds the app for production to the `build` folder with optimized performance
 ### `npm run eject`
 **Note: This is a one-way operation!** Ejects from Create React App setup
 
+### `npm run start:fresh`
+Clears the cache and starts the development server (useful for troubleshooting)
+
+### `npm run clear-cache`
+Manually clears the React build cache
+
 ## Project Structure
 
 ```
 src/
 ├── components/          # Reusable UI components
 │   ├── common/         # Shared components (Header, Footer, etc.)
-│   ├── modals/         # Modal components (Prayer, LearnMore, etc.)
+│   ├── modals/         # Modal components (Prayer, Settings, Paywall, etc.)
+│   ├── pages/          # Page components (Payment success, etc.)
 │   └── NovenaTracker/  # Core tracker components
-├── hooks/              # Custom React hooks
+├── contexts/           # React context providers (Theme, Subscription)
+├── hooks/              # Custom React hooks (useNovenaState, useTrialState)
+├── services/           # External service integrations (Stripe)
 ├── utils/              # Utility functions and helpers
+├── config/             # Configuration files
 ├── types/              # TypeScript type definitions
 └── constants/          # Application constants
 ```

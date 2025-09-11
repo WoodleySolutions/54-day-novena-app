@@ -401,6 +401,39 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             </div>
           </div>
 
+          {/* Development Tools */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="border-t border-gray-200 dark:border-gray-600 pt-6 transition-colors duration-300">
+              <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Development Tools</h3>
+              
+              <div className="space-y-3">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-yellow-600 dark:text-yellow-400">⚠️</div>
+                    <div>
+                      <p className="font-medium text-yellow-800 dark:text-yellow-200">Development Mode</p>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                        If you're experiencing cache issues, use the "Clear ALL + Reload" button below.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      if (window.confirm('This will clear all app data and reload the page. Continue?')) {
+                        const { clearAllAppData } = require('../../utils/devHelpers');
+                        clearAllAppData();
+                      }
+                    }}
+                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mt-3"
+                  >
+                    Clear ALL + Reload
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Clear Data Section */}
           <div className="border-t border-gray-200 dark:border-gray-600 pt-6 transition-colors duration-300">
             <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Data Management</h3>
