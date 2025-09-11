@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
 import { MysteryType, NovenaPhase } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
-import { ROSARY_MYSTERIES } from '../../constants/novena';
+import { ROSARY_MYSTERIES, MYSTERY_REFLECTIONS } from '../../constants/novena';
 import { ExpandablePrayer } from '../common/ExpandablePrayer';
 import { getPrayerText } from '../../constants/commonPrayers';
 import { 
@@ -97,6 +97,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   // Add each decade as individual steps
   const mysteries = ROSARY_MYSTERIES[mystery];
   const decadePrayers = getDecadePrayers(mystery);
+  const reflections = MYSTERY_REFLECTIONS[mystery];
   
   mysteries.forEach((mysteryName, index) => {
     const ordinal = index === 0 ? '1st' : index === 1 ? '2nd' : index === 2 ? '3rd' : index === 3 ? '4th' : '5th';
@@ -104,9 +105,9 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
     // Single consolidated step for each decade
     prayerSteps.push({
       id: `decade-${index + 1}`,
-      title: `${ordinal} Decade: ${mysteryName}`,
+      title: `${ordinal} ${mystery} Mystery: ${mysteryName}`,
       content: [
-        `Meditate on: ${mysteryName}`,
+        `Meditate on: ${mysteryName}. ${reflections[index]}`,
         '',
         'Pray the following:',
         '• 1 Our Father',

@@ -37,6 +37,30 @@ export const MYSTERY_DESCRIPTIONS = {
   'Glorious': "full-blown white roses, tinged with the red of the passion, to remind thee of thy glories, fruits of the sufferings of thy Son and thee"
 } as const;
 
+export const MYSTERY_REFLECTIONS = {
+  'Joyful': [
+    "The Angel Gabriel announces to Mary that she will be the Mother of God, and Mary responds with perfect faith and obedience.",
+    "Mary visits her cousin Elizabeth, who is filled with the Holy Spirit and proclaims Mary blessed among women.",
+    "Jesus is born in Bethlehem, the Word made flesh, bringing light and salvation to the world.",
+    "Mary and Joseph present the infant Jesus in the Temple, where Simeon prophesies His destiny as the light of the nations.",
+    "After three days of searching, Mary and Joseph find twelve-year-old Jesus teaching in the Temple, about His Father's business."
+  ],
+  'Sorrowful': [
+    "Jesus prays in agony in the Garden of Gethsemane, accepting the Father's will to suffer and die for our salvation.",
+    "Jesus is brutally scourged at the pillar, His precious blood shed for the forgiveness of our sins.",
+    "Jesus is crowned with thorns and mocked as King, accepting humiliation to repair our pride and vanity.",
+    "Jesus carries His heavy cross to Calvary, showing us the path of sacrifice and love for others.",
+    "Jesus dies on the cross, offering His life as the perfect sacrifice for the redemption of mankind."
+  ],
+  'Glorious': [
+    "Jesus rises from the dead in glory, conquering sin and death, and offering us eternal life.",
+    "Jesus ascends into heaven, taking His place at the right hand of the Father as our eternal High Priest.",
+    "The Holy Spirit descends upon the Apostles, filling them with courage and wisdom to spread the Gospel.",
+    "Mary is assumed body and soul into heaven, crowned as Queen of Heaven and Earth.",
+    "Mary is crowned Queen of Heaven and Earth, our loving Mother and powerful intercessor before God."
+  ]
+} as const;
+
 export const DECADE_PRAYERS = {
   'Joyful': [
     "I bind these snow-white buds with a petition for the virtue of humility and humbly lay this bouquet at thy feet.",
