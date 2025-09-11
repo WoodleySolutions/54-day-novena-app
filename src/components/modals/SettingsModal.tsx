@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff, Sun, Moon, Laptop } from 'lucide-react';
+import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff, Sun, Moon, Laptop, Crown } from 'lucide-react';
+import { PremiumGuard } from '../common/PremiumGuard';
 import { 
   getNotificationPermission, 
   requestNotificationPermission,
@@ -22,12 +23,14 @@ interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onClearData: () => void;
+  onUpgradeClick?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
-  onClearData
+  onClearData,
+  onUpgradeClick
 }) => {
   const [permission, setPermission] = useState(getNotificationPermission());
   const [reminderTime, setReminderTime] = useState(getReminderTimePreference());
@@ -302,6 +305,70 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Premium Features Section */}
+          <div className="border-t border-gray-200 dark:border-gray-600 pt-6 transition-colors duration-300">
+            <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Premium Features</h3>
+            
+            <PremiumGuard
+              feature="advanced prayer settings"
+              onUpgradeClick={onUpgradeClick}
+              fallback={
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Crown className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                    <span className="font-medium text-gray-900 dark:text-white">Unlock Premium Settings</span>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
+                    <div>• Custom prayer reminder schedules</div>
+                    <div>• Multiple novena types (Divine Mercy, Sacred Heart)</div>
+                    <div>• Advanced progress analytics and insights</div>
+                    <div>• Export prayer journal and progress</div>
+                  </div>
+                  {onUpgradeClick && (
+                    <button
+                      onClick={onUpgradeClick}
+                      className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                    >
+                      Upgrade to Premium
+                    </button>
+                  )}
+                </div>
+              }
+            >
+              <div className="space-y-4">
+                {/* Premium custom reminder settings */}
+                <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Crown className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <span className="font-medium text-purple-800 dark:text-purple-200">Premium Active</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Custom Reminder Times
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="time"
+                          className="px-3 py-2 border border-purple-300 dark:border-purple-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                          defaultValue="09:00"
+                        />
+                        <input
+                          type="time"
+                          className="px-3 py-2 border border-purple-300 dark:border-purple-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                          defaultValue="21:00"
+                        />
+                      </div>
+                      <p className="text-xs text-purple-700 dark:text-purple-300 mt-2">
+                        Set multiple daily reminders for your prayer times
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </PremiumGuard>
           </div>
 
           {/* Support Development Section */}

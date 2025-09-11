@@ -2,9 +2,18 @@
   publish = "build"
   command = "npm run build"
 
+[functions]
+  directory = "netlify/functions"
+
 [build.environment]
   # Environment variables can also be set here
   # REACT_APP_GA_TRACKING_ID = "G-NBNBDSTW1N"  # Commented out - use Netlify dashboard instead
+
+# Stripe API endpoint redirects
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
 # Headers for better caching
 [[headers]]
@@ -21,3 +30,19 @@
   for = "/*.css"  
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Security headers for Stripe integration
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com; connect-src 'self' https://api.stripe.com; style-src 'self' 'unsafe-inline'"
+
+# Stripe webhook endpoint - no caching
+[[headers]]
+  for = "/.netlify/functions/stripe-webhook"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

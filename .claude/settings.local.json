@@ -8,7 +8,10 @@
       "Bash(bubblewrap:*)",
       "Read(C:\\Users\\woodl\\Downloads/**)",
       "Read(C:\\Users\\woodl\\Downloads/**)",
-      "Read(C:\\Users\\woodl\\Downloads/**)"
+      "Read(C:\\Users\\woodl\\Downloads/**)",
+      "Read(C:\\Users\\woodl\\Downloads/**)",
+      "Read(C:\\Users\\woodl\\Downloads\\NotificationDebugging/**)",
+      "Read(C:\\Users\\woodl\\Downloads\\NotificationDebugging/**)"
     ],
     "deny": [],
     "ask": []

@@ -1,16 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Heart } from 'lucide-react';
 import { useNovenaState } from './hooks/useNovenaState';
+import { useSubscription } from './contexts/SubscriptionContext';
 import { IntentionModal } from './components/modals/IntentionModal';
 import { PrayerModal } from './components/modals/PrayerModal';
+import { PaywallModal } from './components/modals/PaywallModal';
+import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
 import { AppHeader } from './components/common/AppHeader';
 import { AppFooter } from './components/common/AppFooter';
 import { ProgressBar } from './components/common/ProgressBar';
 import { PhaseCard } from './components/NovenaTracker/PhaseCard';
 import { DayButton } from './components/NovenaTracker/DayButton';
+import { TrialBanner } from './components/common/TrialBanner';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
 import { StorageDebug } from './components/common/StorageDebug';
+import { TrialDebug } from './components/common/TrialDebug';
+import { PremiumGuard } from './components/common/PremiumGuard';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { 
   getCurrentPhase, 
@@ -38,6 +44,10 @@ const NovenaTracker: React.FC = () => {
     clearAllData
   } = useNovenaState();
 
+  const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen } = useSubscription();
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(!hasSeenWelcome);
+
   // Initialize Google Analytics and notifications on component mount
   useEffect(() => {
     initGA();
@@ -48,8 +58,33 @@ const NovenaTracker: React.FC = () => {
 
   // Enhanced handlers with analytics tracking
   const handleStartNovena = () => {
+    // Check if user has access (trial or premium)
+    if (!hasAccess) {
+      setShowPaywall(true);
+      return;
+    }
+    
     startNovena();
     analytics.novenaStarted();
+  };
+
+  const handleUpgradeClick = () => {
+    setShowPaywall(true);
+  };
+
+  const handlePaywallClose = () => {
+    setShowPaywall(false);
+  };
+
+  const handleWelcomeStartTrial = () => {
+    startTrial();
+    markWelcomeSeen();
+    setShowWelcome(false);
+  };
+
+  const handleWelcomeSkip = () => {
+    markWelcomeSeen();
+    setShowWelcome(false);
   };
 
   const handleOpenPrayerModal = () => {
@@ -76,9 +111,12 @@ const NovenaTracker: React.FC = () => {
   };
 
   return (
-    <ThemeProvider>
+    <ThemeProvider> {/* Updated to use new SubscriptionContext */}
       <div className="max-w-4xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 min-h-screen transition-colors duration-300">
-      <AppHeader onClearData={clearAllData} />
+      <AppHeader onClearData={clearAllData} onUpgradeClick={handleUpgradeClick} />
+      
+      {/* Trial Status Banner */}
+      <TrialBanner onUpgradeClick={handleUpgradeClick} />
 
       {/* Progress Overview Section */}
       {startDate && (
@@ -100,27 +138,60 @@ const NovenaTracker: React.FC = () => {
               <p className="text-gray-600 dark:text-gray-300 italic">"{intention}"</p>
             </div>
           )}
+          
+          {/* Phase Breakdown Analytics - Available to all trial/paid users */}
+          {hasAccess && (
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-lg p-4 mt-4 border border-indigo-200 dark:border-indigo-700">
+              <h4 className="font-semibold text-indigo-800 dark:text-indigo-200 mb-2">Your Progress Breakdown</h4>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {Array.from(completedDays).filter(day => day <= 27).length}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-300">Petition Days</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {Array.from(completedDays).filter(day => day > 27).length}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-300">Thanksgiving Days</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {Math.round((completedDays.size / TOTAL_DAYS) * 100)}%
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-300">Complete</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {/* Pray Today's Novena Button */}
       {startDate && (
-        <div className="text-center mb-6">
-          <button
-            onClick={handleOpenPrayerModal}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3 mx-auto"
-          >
-            <Heart className="w-6 h-6" />
-            Pray Today's Novena
-            <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
-              Day {currentDay}
-            </span>
-          </button>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            {getMysteryForDay(currentDay)} Mysteries • {getPhaseInfo(getCurrentPhase(currentDay)).title}
-          </p>
-        </div>
+        <PremiumGuard 
+          feature="daily prayer guidance" 
+          onUpgradeClick={handleUpgradeClick}
+        >
+          <div className="text-center mb-6">
+            <button
+              onClick={handleOpenPrayerModal}
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg transition-all duration-200 transform hover:scale-105 flex items-center gap-3 mx-auto"
+            >
+              <Heart className="w-6 h-6" />
+              Pray Today's Novena
+              <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
+                Day {currentDay}
+              </span>
+            </button>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+              {getMysteryForDay(currentDay)} Mysteries • {getPhaseInfo(getCurrentPhase(currentDay)).title}
+            </p>
+          </div>
+        </PremiumGuard>
       )}
+
 
       {/* Start Novena or Main Tracking Interface */}
       {!startDate ? (
@@ -140,7 +211,10 @@ const NovenaTracker: React.FC = () => {
           </button>
         </div>
       ) : (
-        <>
+        <PremiumGuard 
+          feature="54-day novena tracking" 
+          onUpgradeClick={handleUpgradeClick}
+        >
           {/* Phase Overview Cards */}
           <div className="grid md:grid-cols-2 gap-4 mb-6">
             <PhaseCard
@@ -203,8 +277,7 @@ const NovenaTracker: React.FC = () => {
               })}
             </div>
           </div>
-
-        </>
+        </PremiumGuard>
       )}
 
       <IntentionModal
@@ -224,8 +297,21 @@ const NovenaTracker: React.FC = () => {
         onComplete={handlePrayerComplete}
       />
 
-      {/* Debug component - only show in development */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={handlePaywallClose}
+        feature="the 54-day novena tracker"
+      />
+
+      <TrialWelcomeModal
+        isOpen={showWelcome}
+        onStartTrial={handleWelcomeStartTrial}
+        onSkip={handleWelcomeSkip}
+      />
+
+      {/* Debug components - only show in development */}
       <StorageDebug isVisible={process.env.NODE_ENV === 'development'} />
+      <TrialDebug isVisible={process.env.NODE_ENV === 'development'} />
       
         <AppFooter />
       </div>

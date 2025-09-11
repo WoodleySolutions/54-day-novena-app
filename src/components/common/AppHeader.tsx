@@ -6,9 +6,10 @@ import { analytics } from '../../utils/analytics';
 
 interface AppHeaderProps {
   onClearData?: () => void;
+  onUpgradeClick?: () => void;
 }
 
-export const AppHeader: React.FC<AppHeaderProps> = ({ onClearData }) => {
+export const AppHeader: React.FC<AppHeaderProps> = ({ onClearData, onUpgradeClick }) => {
   const [showLearnMore, setShowLearnMore] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -59,6 +60,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onClearData }) => {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
         onClearData={onClearData || (() => {})}
+        onUpgradeClick={onUpgradeClick}
       />
     </>
   );
