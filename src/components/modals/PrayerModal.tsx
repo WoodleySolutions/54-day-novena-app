@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
-import { MysteryType, NovenaPhase } from '../../types';
+import { MysteryType, NovenaPhase, PrayerType } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES, MYSTERY_REFLECTIONS } from '../../constants/novena';
 import { ExpandablePrayer } from '../common/ExpandablePrayer';
@@ -13,10 +13,11 @@ import {
 
 interface PrayerModalProps {
   isOpen: boolean;
-  currentDay: number;
+  prayerType: PrayerType;
+  currentDay?: number; // Optional for daily rosary
   mystery: MysteryType;
-  phase: NovenaPhase;
-  intention: string;
+  phase?: NovenaPhase; // Optional for daily rosary
+  intention?: string;
   onClose: () => void;
   onComplete: () => void;
 }
@@ -30,10 +31,11 @@ interface PrayerStep {
 
 export const PrayerModal: React.FC<PrayerModalProps> = ({
   isOpen,
-  currentDay,
+  prayerType,
+  currentDay = 1,
   mystery,
-  phase,
-  intention,
+  phase = 'petition',
+  intention = '',
   onClose,
   onComplete
 }) => {
@@ -53,8 +55,13 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
 
   if (!isOpen) return null;
 
-  const prayerSteps: PrayerStep[] = [
-    {
+  const isNovena = prayerType === '54-day-novena';
+
+  const prayerSteps: PrayerStep[] = [];
+
+  // Intro step - different for each prayer type
+  if (isNovena) {
+    prayerSteps.push({
       id: 'intro',
       title: `Day ${currentDay} - ${mystery} Mysteries`,
       content: [
@@ -63,61 +70,84 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
         'Begin by making the Sign of the Cross.'
       ],
       type: 'instruction'
-    },
-    {
+    });
+  } else {
+    prayerSteps.push({
+      id: 'intro',
+      title: `${mystery} Mysteries Rosary`,
+      content: [
+        `Today you are praying the ${mystery} Mysteries of the Holy Rosary.`,
+        intention ? `Your intention: "${intention}"` : 'Take a moment to set your intention for this prayer.',
+        'Begin by making the Sign of the Cross.'
+      ],
+      type: 'instruction'
+    });
+  }
+
+  // Opening prayer - only for 54-day novena
+  if (isNovena) {
+    prayerSteps.push({
       id: 'opening-prayer',
       title: 'Opening Prayer to Mary',
       content: getOpeningPrayer(mystery, phase),
       type: 'prayer'
-    },
-    {
-      id: 'rosary-opening',
-      title: 'Rosary Opening Prayers',
-      content: [
-        'Pray the following opening prayers:',
-        '',
-        '• Apostles\' Creed',
-        '• 1 Our Father',
-        '• 3 Hail Marys (for Faith, Hope, and Charity)',
-        '• 1 Glory Be'
-      ],
-      type: 'instruction'
-    },
-    {
-      id: 'mysteries-intro',
-      title: `The ${mystery} Mysteries`,
-      content: [
-        `Today you will meditate on the ${mystery} Mysteries:`,
-        ...ROSARY_MYSTERIES[mystery].map((m, i) => `${i + 1}. ${m}`)
-      ],
-      type: 'mysteries'
-    }
-  ];
+    });
+  }
+
+  // Rosary opening prayers
+  prayerSteps.push({
+    id: 'rosary-opening',
+    title: 'Rosary Opening Prayers',
+    content: [
+      'Pray the following opening prayers:',
+      '',
+      '• Apostles\' Creed',
+      '• 1 Our Father',
+      '• 3 Hail Marys (for Faith, Hope, and Charity)',
+      '• 1 Glory Be'
+    ],
+    type: 'instruction'
+  });
+
+  // Mysteries introduction
+  prayerSteps.push({
+    id: 'mysteries-intro',
+    title: `The ${mystery} Mysteries`,
+    content: [
+      `Today you will meditate on the ${mystery} Mysteries:`,
+      ...ROSARY_MYSTERIES[mystery].map((m, i) => `${i + 1}. ${m}`)
+    ],
+    type: 'mysteries'
+  });
 
   // Add each decade as individual steps
   const mysteries = ROSARY_MYSTERIES[mystery];
-  const decadePrayers = getDecadePrayers(mystery);
   const reflections = MYSTERY_REFLECTIONS[mystery];
   
   mysteries.forEach((mysteryName, index) => {
     const ordinal = index === 0 ? '1st' : index === 1 ? '2nd' : index === 2 ? '3rd' : index === 3 ? '4th' : '5th';
     
+    const content = [
+      `Meditate on: ${mysteryName}. ${reflections[index]}`,
+      '',
+      'Pray the following:',
+      '• 1 Our Father',
+      '• 10 Hail Marys (while meditating on this mystery)',
+      '• 1 Glory Be',
+      '• Fatima Prayer'
+    ];
+
+    // Add novena-specific prayers only for 54-day novena
+    if (isNovena) {
+      const decadePrayers = getDecadePrayers(mystery);
+      content.push('', 'Then pray:', `"${decadePrayers[index]}"`);
+    }
+    
     // Single consolidated step for each decade
     prayerSteps.push({
       id: `decade-${index + 1}`,
       title: `${ordinal} ${mystery} Mystery: ${mysteryName}`,
-      content: [
-        `Meditate on: ${mysteryName}. ${reflections[index]}`,
-        '',
-        'Pray the following:',
-        '• 1 Our Father',
-        '• 10 Hail Marys (while meditating on this mystery)',
-        '• 1 Glory Be',
-        '• Fatima Prayer',
-        '',
-        'Then pray:',
-        `"${decadePrayers[index]}"`
-      ],
+      content,
       type: 'instruction'
     });
   });
@@ -137,13 +167,15 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
     type: 'prayer'
   });
 
-  // Add closing
-  prayerSteps.push({
-    id: 'closing',
-    title: 'Closing Prayer',
-    content: getClosingPrayer(phase, mystery, intention),
-    type: 'prayer'
-  });
+  // Add novena-specific closing prayer only for 54-day novena
+  if (isNovena) {
+    prayerSteps.push({
+      id: 'closing',
+      title: 'Closing Prayer',
+      content: getClosingPrayer(phase, mystery, intention),
+      type: 'prayer'
+    });
+  }
 
   prayerSteps.push({
     id: 'complete',

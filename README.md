@@ -1,18 +1,34 @@
-# 54-Day Novena Tracker
+# Catholic Rosary Companion
 
-A comprehensive Catholic prayer application for tracking and guiding through the traditional 54-Day Rosary Novena to the Blessed Virgin Mary.
+A comprehensive Catholic prayer application offering both the traditional 54-Day Rosary Novena and daily rosary prayers with full mystery support and streak tracking.
 
 ## Overview
 
-The 54-Day Novena Tracker helps Catholics complete the powerful devotion popularized by Fortuna Agrelli in 1884. The novena consists of 27 days of petition followed by 27 days of thanksgiving, with step-by-step prayer guidance through all five sets of rosary mysteries.
+The Catholic Rosary Companion serves as a complete digital prayer guide for Catholics, featuring two distinct prayer experiences:
+
+1. **54-Day Novena Tracker** - The powerful devotion popularized by Fortuna Agrelli in 1884, consisting of 27 days of petition followed by 27 days of thanksgiving
+2. **Daily Rosary Companion** - Flexible daily rosary prayers with user-selectable mysteries including Joyful, Sorrowful, Glorious, and Luminous mysteries, plus streak tracking
 
 ## Features
 
-### Core Functionality
-- **Day-by-day progress tracking** with visual progress indicators
-- **Interactive prayer modal** with step-by-step rosary guidance
-- **Automatic mystery rotation** through Joyful, Sorrowful, Glorious, and Luminous mysteries
+### 54-Day Novena Features
+- **Day-by-day progress tracking** with visual progress indicators through 54 days
+- **Two-phase structure** - 27 days of petition followed by 27 days of thanksgiving
+- **Automatic mystery rotation** through Joyful, Sorrowful, and Glorious mysteries (traditional novena cycle)
 - **Personal intention setting** integrated into prayer flow
+- **Phase-specific analytics** showing petition vs thanksgiving progress
+
+### Daily Rosary Features
+- **Mystery selection** - Choose from Joyful, Sorrowful, Glorious, or Luminous mysteries
+- **Streak tracking** - Monitor consecutive days of prayer with statistics
+- **Flexible prayer schedule** - Pray any mystery at any time
+- **Traditional day suggestions** - Recommended mysteries for each day of the week
+- **Prayer session history** - Track all completed rosary sessions
+
+### Shared Features
+- **Interactive prayer modal** with step-by-step rosary guidance
+- **Traditional meditation reflections** for each mystery
+- **Enhanced decade headers** showing specific mystery names
 - **Data persistence** across browser sessions using localStorage
 - **Free trial system** with premium subscription features
 - **Dark mode support** with automatic theme detection
@@ -82,7 +98,7 @@ REACT_APP_GA_TRACKING_ID=G-XXXXXXXXXX
 npm start
 ```
 
-The application will open at `http://localhost:3010` (configured in `.env`)
+The application will open at `http://localhost:3011` (configured in `.env`)
 
 ### Environment Variables
 
@@ -119,6 +135,7 @@ src/
 ├── components/          # Reusable UI components
 │   ├── common/         # Shared components (Header, Footer, etc.)
 │   ├── modals/         # Modal components (Prayer, Settings, Paywall, etc.)
+│   ├── screens/        # Main screen components (PrayerSelection, NovenaTracking)
 │   ├── pages/          # Page components (Payment success, etc.)
 │   └── NovenaTracker/  # Core tracker components
 ├── contexts/           # React context providers (Theme, Subscription)
@@ -133,19 +150,22 @@ src/
 ## Architecture Highlights
 
 ### State Management
-- Custom `useNovenaState` hook for centralized state management
-- localStorage integration with error handling and data validation
-- Computed properties for current day calculations
+- Custom `useNovenaState` hook for 54-day novena tracking
+- Dedicated rosary streak tracking system with localStorage persistence
+- Dual navigation system supporting both prayer types
+- Computed properties for current day calculations and streak analysis
 
 ### Component Design
 - Modular, reusable components following React best practices
-- TypeScript interfaces for type safety
+- TypeScript interfaces for type safety across dual prayer systems
 - Separation of concerns between UI and business logic
+- Screen-based architecture with PrayerSelectionScreen as main hub
 
 ### Prayer System
-- Step-by-step modal workflow for complete rosary guidance
-- Dynamic prayer generation based on mystery type and novena phase
-- Traditional Catholic prayer structure with proper sequencing
+- Unified prayer modal supporting both novena and daily rosary
+- Dynamic prayer generation based on mystery type and prayer context
+- Traditional Catholic prayer structure with enhanced mystery reflections
+- Streak tracking and session management for daily rosary prayers
 
 ## Deployment
 
