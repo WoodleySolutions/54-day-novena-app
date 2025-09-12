@@ -3,6 +3,7 @@ import { Calendar, Heart, BookOpen, Clock, Trophy, Flame } from 'lucide-react';
 import { RosaryStreakData, NovenaState } from '../../types';
 import { calculateCompletionPercentage } from '../../utils/novenaCalculations';
 import { TOTAL_DAYS } from '../../constants/novena';
+import { TrialBanner } from '../common/TrialBanner';
 
 interface PrayerSelectionScreenProps {
   novenaState: NovenaState;
@@ -68,6 +69,9 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
         </h1>
         <p className="text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
       </div>
+
+      {/* Trial Status Banner */}
+      <TrialBanner onUpgradeClick={onUpgradeClick} />
 
       {/* 54-Day Novena Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
