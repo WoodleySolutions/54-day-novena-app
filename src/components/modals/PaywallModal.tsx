@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Crown, Clock, Heart, Calendar, BarChart3, CreditCard } from 'lucide-react';
+import { X, Crown, Clock, Heart, Calendar, BarChart3, CreditCard, Smartphone, Globe } from 'lucide-react';
 import { useSubscription } from '../../contexts/SubscriptionContext';
 import { getProductInfo, formatPrice } from '../../services/stripe';
+import { shouldUseStripePayments, shouldUseGooglePlayBilling, getPaymentMethodName } from '../../utils/platform';
 
 interface PaywallModalProps {
   isOpen: boolean;
@@ -18,6 +19,11 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
   const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'annual'>('annual');
   const [isLoading, setIsLoading] = useState(false);
   
+  // Platform detection
+  const useStripe = shouldUseStripePayments();
+  const useGooglePlay = shouldUseGooglePlayBilling();
+  const paymentMethodName = getPaymentMethodName();
+  
   if (!isOpen) return null;
   
   const handleStartTrial = () => {
@@ -29,32 +35,41 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
     setIsLoading(true);
     
     try {
-      const productInfo = getProductInfo(selectedPlan === 'annual' ? 'yearly' : 'monthly');
-      
-      // In production, this would redirect to Stripe Checkout
-      // For now, we'll show a demo message and simulate activation
-      
-      console.log('Starting Stripe checkout for:', {
-        plan: selectedPlan,
-        priceId: productInfo.priceId,
-        amount: productInfo.price
-      });
-      
-      // Demo: Show what would happen in production
-      const shouldSimulateSuccess = window.confirm(
-        `Demo Mode: This would redirect to Stripe Checkout for the ${selectedPlan} plan (${formatPrice(productInfo.price)}).\n\nClick OK to simulate successful payment, Cancel to simulate payment failure.`
-      );
-      
-      if (shouldSimulateSuccess) {
-        // Simulate successful payment
+      if (useStripe) {
+        // Web platform - use Stripe
+        const productInfo = getProductInfo(selectedPlan === 'annual' ? 'yearly' : 'monthly');
+        
+        console.log('Starting Stripe checkout for:', {
+          plan: selectedPlan,
+          priceId: productInfo.priceId,
+          amount: productInfo.price
+        });
+        
+        // Demo: Show what would happen in production
+        const shouldSimulateSuccess = window.confirm(
+          `Demo Mode (Web): This would redirect to Stripe Checkout for the ${selectedPlan} plan (${formatPrice(productInfo.price)}).\n\nClick OK to simulate successful payment, Cancel to simulate payment failure.`
+        );
+        
+        if (shouldSimulateSuccess) {
+          activatePremium();
+        }
+      } else if (useGooglePlay) {
+        // Android platform - show Google Play billing message
+        alert(
+          `Google Play Billing Integration\n\nThis feature will be implemented when the app is ready for the Google Play Store.\n\nFor now, enjoy all features for free!`
+        );
+        // For development, grant access
         activatePremium();
-        console.log('🎉 Demo: Premium activated successfully!');
-        alert('Demo: Payment successful! Premium features activated.');
-        onClose();
       } else {
-        // Simulate payment cancellation
-        console.log('Demo: Payment cancelled by user');
+        // Other platforms - show appropriate message
+        alert(
+          `Payment processing for ${paymentMethodName} is not yet implemented.\n\nFor now, enjoy all features for free!`
+        );
+        activatePremium();
       }
+      
+      console.log('🎉 Demo: Premium activated successfully!');
+      onClose();
       
       // In production, this would be:
       // await createDirectCheckout(productInfo.priceId);
@@ -139,6 +154,17 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
             </div>
           </div>
           
+          {/* Platform Indicator */}
+          <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+            <div className="flex items-center gap-2">
+              {useGooglePlay ? <Smartphone className="w-4 h-4 text-blue-600 dark:text-blue-400" /> : <Globe className="w-4 h-4 text-blue-600 dark:text-blue-400" />}
+              <span className="text-sm text-blue-800 dark:text-blue-200">
+                Payment via {paymentMethodName}
+                {useGooglePlay && " (Coming Soon)"}
+              </span>
+            </div>
+          </div>
+
           {/* Pricing Plans */}
           <div className="mb-6">
             <div className="grid grid-cols-1 gap-3">
@@ -232,8 +258,22 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({
                 </>
               ) : (
                 <>
-                  <CreditCard className="w-5 h-5" />
-                  Subscribe Now - {selectedPlan === 'annual' ? formatPrice(getProductInfo('yearly').price) + '/year' : formatPrice(getProductInfo('monthly').price) + '/month'}
+                  {useStripe ? (
+                    <>
+                      <CreditCard className="w-5 h-5" />
+                      Subscribe Now - {selectedPlan === 'annual' ? formatPrice(getProductInfo('yearly').price) + '/year' : formatPrice(getProductInfo('monthly').price) + '/month'}
+                    </>
+                  ) : useGooglePlay ? (
+                    <>
+                      <Smartphone className="w-5 h-5" />
+                      Get Premium Access (Coming Soon)
+                    </>
+                  ) : (
+                    <>
+                      <Crown className="w-5 h-5" />
+                      Get Premium Access
+                    </>
+                  )}
                 </>
               )}
             </button>
