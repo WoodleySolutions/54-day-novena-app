@@ -1,4 +1,4 @@
-import { RosarySession, RosaryStreakData, MysteryType, PrayerType } from '../types';
+import { RosarySession, RosaryStreakData, MysteryType, ChapletType, PrayerType } from '../types';
 
 const ROSARY_STREAK_KEY = 'rosary-streak-data';
 
@@ -54,6 +54,21 @@ export const createRosarySession = (
     date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
     prayerType,
     mystery,
+    completed: false,
+    intention
+  };
+};
+
+// Create a new chaplet session
+export const createChapletSession = (
+  chaplet: ChapletType,
+  intention?: string
+): RosarySession => {
+  return {
+    id: `chaplet-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
+    prayerType: 'chaplet',
+    chaplet,
     completed: false,
     intention
   };
@@ -147,6 +162,7 @@ export const getPrayerStatistics = (streakData: RosaryStreakData) => {
   const prayerTypeStats = {
     'daily-rosary': completedSessions.filter(s => s.prayerType === 'daily-rosary').length,
     '54-day-novena': completedSessions.filter(s => s.prayerType === '54-day-novena').length,
+    'chaplet': completedSessions.filter(s => s.prayerType === 'chaplet').length,
   };
 
   // Calculate average session duration (if recorded)

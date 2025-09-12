@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppScreen, MysteryType, RosarySession } from './types';
+import { AppScreen, MysteryType, ChapletType, RosarySession } from './types';
 import { useSubscription } from './contexts/SubscriptionContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -7,20 +7,24 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { PrayerSelectionScreen } from './components/screens/PrayerSelectionScreen';
 import NovenaTrackingScreen from './components/screens/NovenaTrackingScreen';
 import { RosarySelectionModal } from './components/modals/RosarySelectionModal';
+import { ChapletSelectionModal } from './components/modals/ChapletSelectionModal';
 import { PrayerModal } from './components/modals/PrayerModal';
 import { PaywallModal } from './components/modals/PaywallModal';
 import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
+import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
 
 // Utilities
 import { 
   loadRosaryStreakData, 
   saveRosaryStreakData, 
   createRosarySession, 
+  createChapletSession,
   completeRosarySession 
 } from './utils/rosaryStreak';
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
+import { NOVENA_INFO, ROSARY_INFO, CHAPLET_INFO } from './constants/prayerInfo';
 import './utils/devHelpers'; // Load development utilities
 
 const App: React.FC = () => {
@@ -29,9 +33,13 @@ const App: React.FC = () => {
   
   // Modal states
   const [showRosarySelection, setShowRosarySelection] = useState(false);
+  const [showChapletSelection, setShowChapletSelection] = useState(false);
   const [showPrayerModal, setShowPrayerModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showNovenaInfo, setShowNovenaInfo] = useState(false);
+  const [showRosaryInfo, setShowRosaryInfo] = useState(false);
+  const [showChapletInfo, setShowChapletInfo] = useState(false);
   
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
@@ -86,9 +94,9 @@ const App: React.FC = () => {
     setShowRosarySelection(true);
   };
 
-  const handleViewHistory = () => {
-    // TODO: Implement prayer history screen
-    alert('Prayer history feature coming soon!');
+
+  const handlePrayChaplet = () => {
+    setShowChapletSelection(true);
   };
 
   // Rosary selection handlers
@@ -108,6 +116,24 @@ const App: React.FC = () => {
     analytics.prayerModalOpened(1, mystery);
   };
 
+  // Chaplet selection handlers
+  const handleChapletSelection = (chaplet: ChapletType) => {
+    const session = createChapletSession(chaplet);
+    setCurrentPrayerSession(session);
+    
+    // Update streak data with new session
+    setRosaryStreakData(prev => ({
+      ...prev,
+      sessions: [...prev.sessions, session]
+    }));
+    
+    setShowChapletSelection(false);
+    setShowPrayerModal(true);
+    
+    // Track chaplet prayer start
+    console.log('Started chaplet prayer:', chaplet);
+  };
+
   // Prayer completion handlers
   const handleRosaryPrayerComplete = () => {
     if (currentPrayerSession) {
@@ -116,7 +142,10 @@ const App: React.FC = () => {
         rosaryStreakData
       );
       setRosaryStreakData(updatedStreakData);
-      analytics.prayerCompleted(1, currentPrayerSession.mystery);
+      // Only track mystery for rosary prayers, not chaplets
+      if (currentPrayerSession.mystery) {
+        analytics.prayerCompleted(1, currentPrayerSession.mystery);
+      }
     }
     
     setShowPrayerModal(false);
@@ -149,6 +178,19 @@ const App: React.FC = () => {
     setCurrentPrayerSession(null);
   };
 
+  // Info modal handlers
+  const handleShowNovenaInfo = () => {
+    setShowNovenaInfo(true);
+  };
+
+  const handleShowRosaryInfo = () => {
+    setShowRosaryInfo(true);
+  };
+
+  const handleShowChapletInfo = () => {
+    setShowChapletInfo(true);
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -161,9 +203,12 @@ const App: React.FC = () => {
             onStartNovena={handleStartNovena}
             onContinueNovena={handleContinueNovena}
             onPrayRosary={handlePrayRosary}
-            onViewHistory={handleViewHistory}
+            onPrayChaplet={handlePrayChaplet}
             hasAccess={hasAccess}
             onUpgradeClick={handleUpgradeClick}
+            onShowNovenaInfo={handleShowNovenaInfo}
+            onShowRosaryInfo={handleShowRosaryInfo}
+            onShowChapletInfo={handleShowChapletInfo}
           />
         )}
 
@@ -181,10 +226,17 @@ const App: React.FC = () => {
           onSelectMystery={handleRosaryMysterySelection}
         />
 
+        <ChapletSelectionModal
+          isOpen={showChapletSelection}
+          onClose={() => setShowChapletSelection(false)}
+          onSelectChaplet={handleChapletSelection}
+        />
+
         <PrayerModal
           isOpen={showPrayerModal}
           prayerType={currentPrayerSession?.prayerType || 'daily-rosary'}
-          mystery={currentPrayerSession?.mystery || 'Joyful'}
+          mystery={currentPrayerSession?.mystery}
+          chaplet={currentPrayerSession?.chaplet}
           intention={currentPrayerSession?.intention}
           onClose={handleClosePrayerModal}
           onComplete={handleRosaryPrayerComplete}
@@ -200,6 +252,25 @@ const App: React.FC = () => {
           isOpen={showWelcome}
           onStartTrial={handleWelcomeStartTrial}
           onSkip={handleWelcomeSkip}
+        />
+
+        {/* Prayer Info Modals */}
+        <PrayerInfoModal
+          isOpen={showNovenaInfo}
+          onClose={() => setShowNovenaInfo(false)}
+          prayerInfo={NOVENA_INFO}
+        />
+
+        <PrayerInfoModal
+          isOpen={showRosaryInfo}
+          onClose={() => setShowRosaryInfo(false)}
+          prayerInfo={ROSARY_INFO}
+        />
+
+        <PrayerInfoModal
+          isOpen={showChapletInfo}
+          onClose={() => setShowChapletInfo(false)}
+          prayerInfo={CHAPLET_INFO}
         />
 
       </div>

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Calendar, Heart, BookOpen, Clock, Trophy, Flame } from 'lucide-react';
+import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info } from 'lucide-react';
 import { RosaryStreakData, NovenaState } from '../../types';
 import { calculateCompletionPercentage } from '../../utils/novenaCalculations';
 import { TOTAL_DAYS } from '../../constants/novena';
+import { CHAPLET_INFO } from '../../constants/chaplets';
 import { TrialBanner } from '../common/TrialBanner';
+import { AppFooter } from '../common/AppFooter';
 
 interface PrayerSelectionScreenProps {
   novenaState: NovenaState;
@@ -11,9 +13,12 @@ interface PrayerSelectionScreenProps {
   onStartNovena: () => void;
   onContinueNovena: () => void;
   onPrayRosary: () => void;
-  onViewHistory: () => void;
+  onPrayChaplet: () => void;
   hasAccess: boolean;
   onUpgradeClick: () => void;
+  onShowNovenaInfo?: () => void;
+  onShowRosaryInfo?: () => void;
+  onShowChapletInfo?: () => void;
 }
 
 export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
@@ -22,9 +27,12 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   onStartNovena,
   onContinueNovena,
   onPrayRosary,
-  onViewHistory,
+  onPrayChaplet,
   hasAccess,
-  onUpgradeClick
+  onUpgradeClick,
+  onShowNovenaInfo,
+  onShowRosaryInfo,
+  onShowChapletInfo
 }) => {
   const { currentDay, completedDays, startDate } = novenaState;
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
@@ -65,8 +73,9 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          🌹 Catholic Rosary Companion
+          🌹 Ora
         </h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
         <p className="text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
       </div>
 
@@ -76,9 +85,20 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       {/* 54-Day Novena Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4">
-          <div className="flex items-center gap-3">
-            <Calendar className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">54-Day Novena to Our Lady</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-white" />
+              <h2 className="text-xl font-semibold text-white">54-Day Novena to Our Lady</h2>
+            </div>
+            {onShowNovenaInfo && (
+              <button
+                onClick={onShowNovenaInfo}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+                title="Learn about the 54-Day Novena"
+              >
+                <Info className="w-5 h-5 text-white" />
+              </button>
+            )}
           </div>
         </div>
         
@@ -157,9 +177,20 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       {/* Daily Rosary Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
         <div className="bg-gradient-to-r from-rose-500 to-pink-600 p-4">
-          <div className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-white" />
-            <h2 className="text-xl font-semibold text-white">Daily Rosary</h2>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <BookOpen className="w-6 h-6 text-white" />
+              <h2 className="text-xl font-semibold text-white">Daily Rosary</h2>
+            </div>
+            {onShowRosaryInfo && (
+              <button
+                onClick={onShowRosaryInfo}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+                title="Learn about the Daily Rosary"
+              >
+                <Info className="w-5 h-5 text-white" />
+              </button>
+            )}
           </div>
         </div>
         
@@ -210,26 +241,61 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
         </div>
       </div>
 
-      {/* Prayer History Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">Prayer History</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                View your spiritual journey and prayer statistics
-              </p>
+      {/* Traditional Chaplets Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+        <div className="bg-gradient-to-r from-purple-500 to-violet-600 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-6 h-6 text-white" />
+              <h2 className="text-xl font-semibold text-white">Traditional Chaplets</h2>
             </div>
+            {onShowChapletInfo && (
+              <button
+                onClick={onShowChapletInfo}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+                title="Learn about Traditional Chaplets"
+              >
+                <Info className="w-5 h-5 text-white" />
+              </button>
+            )}
           </div>
+        </div>
+        
+        <div className="p-6">
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            {Object.entries(CHAPLET_INFO).slice(0, 4).map(([key, chaplet]) => (
+              <div
+                key={key}
+                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center transition-colors duration-300"
+              >
+                <div className="text-2xl mb-1">{chaplet.icon}</div>
+                <div className="text-xs font-medium text-gray-800 dark:text-white mb-1">
+                  {chaplet.name.replace('Chaplet of ', '').replace('Chaplet ', '')}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  ~{chaplet.estimatedDuration} min
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mb-4">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              Divine Mercy • St. Michael • Sacred Heart • Seven Sorrows
+            </p>
+          </div>
+
           <button
-            onClick={onViewHistory}
-            className="bg-gray-600 hover:bg-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            onClick={onPrayChaplet}
+            className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
           >
-            View History
+            <Sparkles className="w-5 h-5" />
+            Pray a Chaplet
           </button>
         </div>
       </div>
+
+      <AppFooter />
     </div>
   );
 };

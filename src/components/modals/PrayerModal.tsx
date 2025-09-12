@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft } from 'lucide-react';
-import { MysteryType, NovenaPhase, PrayerType } from '../../types';
+import { MysteryType, ChapletType, NovenaPhase, PrayerType } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES, MYSTERY_REFLECTIONS } from '../../constants/novena';
+import { CHAPLET_INFO, CHAPLET_PRAYERS } from '../../constants/chaplets';
 import { ExpandablePrayer } from '../common/ExpandablePrayer';
 import { getPrayerText } from '../../constants/commonPrayers';
 import { 
@@ -15,7 +16,8 @@ interface PrayerModalProps {
   isOpen: boolean;
   prayerType: PrayerType;
   currentDay?: number; // Optional for daily rosary
-  mystery: MysteryType;
+  mystery?: MysteryType; // Optional for chaplets
+  chaplet?: ChapletType; // Optional for chaplets
   phase?: NovenaPhase; // Optional for daily rosary
   intention?: string;
   onClose: () => void;
@@ -34,6 +36,7 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   prayerType,
   currentDay = 1,
   mystery,
+  chaplet,
   phase = 'petition',
   intention = '',
   onClose,
@@ -56,8 +59,53 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   if (!isOpen) return null;
 
   const isNovena = prayerType === '54-day-novena';
+  const isChaplet = prayerType === 'chaplet';
 
   const prayerSteps: PrayerStep[] = [];
+
+  // Handle chaplet prayers
+  if (isChaplet && chaplet) {
+    const chapletInfo = CHAPLET_INFO[chaplet];
+    const chapletSteps = CHAPLET_PRAYERS[chaplet];
+
+    // Add chaplet intro
+    prayerSteps.push({
+      id: 'chaplet-intro',
+      title: chapletInfo.name,
+      content: [
+        `You are about to pray the ${chapletInfo.name}.`,
+        chapletInfo.description,
+        intention ? `Your intention: "${intention}"` : 'Take a moment to set your intention for this prayer.',
+        `Estimated duration: ${chapletInfo.estimatedDuration} minutes`,
+        'Begin by making the Sign of the Cross.'
+      ],
+      type: 'instruction'
+    });
+
+    // Add each chaplet step
+    chapletSteps.forEach((step) => {
+      prayerSteps.push({
+        id: step.id,
+        title: step.title,
+        content: Array.isArray(step.content) ? step.content : [step.content],
+        type: step.type as 'prayer' | 'instruction' | 'mysteries' | 'decades'
+      });
+    });
+
+    // Add completion step
+    prayerSteps.push({
+      id: 'chaplet-complete',
+      title: 'Prayer Complete',
+      content: [
+        'Finish with the Sign of the Cross.',
+        `Your ${chapletInfo.name} is now complete.`,
+        'May God bless your faithful devotion.'
+      ],
+      type: 'instruction'
+    });
+
+    // Skip the rest of the rosary-specific logic
+  } else if (mystery) {
 
   // Intro step - different for each prayer type
   if (isNovena) {
@@ -177,16 +225,20 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
     });
   }
 
-  prayerSteps.push({
-    id: 'complete',
-    title: 'Prayer Complete',
-    content: [
-      'Finish with the Sign of the Cross.',
-      'Your daily novena prayer is now complete.',
-      'May God bless your faithful devotion.'
-    ],
-    type: 'instruction'
-  });
+  if (!isChaplet) {
+    prayerSteps.push({
+      id: 'complete',
+      title: 'Prayer Complete',
+      content: [
+        'Finish with the Sign of the Cross.',
+        'Your daily novena prayer is now complete.',
+        'May God bless your faithful devotion.'
+      ],
+      type: 'instruction'
+    });
+  }
+
+  } // Close the else if (mystery) block
 
   const currentStep = prayerSteps[currentStepIndex];
   const isFirstStep = currentStepIndex === 0;

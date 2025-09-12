@@ -38,7 +38,7 @@ export const AppFooter: React.FC = () => {
         <p className="text-gray-500 dark:text-gray-400 text-xs">
           Have feedback or suggestions?{' '}
           <a 
-            href="mailto:tyler.woodleysolutions@gmail.com?subject=54-Day Novena Tracker Feedback" 
+            href="mailto:tyler.woodleysolutions@gmail.com?subject=Ora Feedback" 
             className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 underline transition-colors"
             onClick={handleContactClick}
             title="Click to open your email app or copy email address"

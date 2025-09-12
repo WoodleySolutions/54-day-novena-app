@@ -1,13 +1,14 @@
-# Catholic Rosary Companion
+# Ora: Rosary & Devotion Tracker
 
-A comprehensive Catholic prayer application offering both the traditional 54-Day Rosary Novena and daily rosary prayers with full mystery support and streak tracking.
+Ora is a beautiful Catholic prayer companion for the rosary, chaplets, and the 54-Day Novena to Our Lady. Track your spiritual journey with guided prayers and devotions.
 
 ## Overview
 
-The Catholic Rosary Companion serves as a complete digital prayer guide for Catholics, featuring two distinct prayer experiences:
+Ora serves as a complete digital prayer guide for Catholics, featuring multiple prayer experiences:
 
 1. **54-Day Novena Tracker** - The powerful devotion popularized by Fortuna Agrelli in 1884, consisting of 27 days of petition followed by 27 days of thanksgiving
-2. **Daily Rosary Companion** - Flexible daily rosary prayers with user-selectable mysteries including Joyful, Sorrowful, Glorious, and Luminous mysteries, plus streak tracking
+2. **Daily Rosary** - Flexible daily rosary prayers with user-selectable mysteries including Joyful, Sorrowful, Glorious, and Luminous mysteries, plus streak tracking
+3. **Traditional Chaplets** - Divine Mercy, St. Michael, Sacred Heart, and Seven Sorrows chaplets with guided meditations
 
 ## Features
 
@@ -188,7 +189,7 @@ The application is deployed on Netlify with:
 
 Have feedback, suggestions, or need support? We'd love to hear from you!
 
-📧 **Email**: [tyler.woodleysolutions@gmail.com](mailto:tyler.woodleysolutions@gmail.com?subject=54-Day%20Novena%20Tracker%20Feedback)
+📧 **Email**: [tyler.woodleysolutions@gmail.com](mailto:tyler.woodleysolutions@gmail.com?subject=Ora%20Feedback)
 
 You can also use the "Contact us" link in the app footer for quick feedback.
 
