@@ -1,6 +1,6 @@
 {
   "name": "ora-rosary-devotion-tracker",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": true,
   "dependencies": {
     "@stripe/stripe-js": "^7.9.0",
