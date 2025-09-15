@@ -77,16 +77,91 @@ This virtual rosary is an experimental feature currently available for tradition
 
 **Feedback Welcome**: This is our most ambitious feature yet! Please share your experience and suggestions to help us improve this sacred prayer companion.
 
+## Complete Feature History Since v0.2.0
+
+### 🔄 Major Architectural Changes
+**c60a008 - Transform into comprehensive Catholic Rosary Companion**
+- Complete App.tsx rewrite supporting dual prayer system
+- Added PrayerSelectionScreen as new main hub
+- Moved original functionality to dedicated NovenaTrackingScreen
+- New screen-based navigation architecture
+
+### 🌹 Prayer System Expansion  
+**Daily Rosary Companion Added:**
+- Full mystery selection: Joyful, Sorrowful, Glorious, Luminous
+- Streak tracking with consecutive day calculations
+- Prayer session history and statistics
+- Traditional day suggestions for mystery selection
+- Enhanced decade headers: "1st Glorious Mystery: The Resurrection"
+
+**Traditional Catholic Chaplets Added:**
+- Divine Mercy Chaplet with guided meditations
+- St. Michael the Archangel Chaplet
+- Sacred Heart of Jesus Chaplet  
+- Seven Sorrows of Mary Chaplet
+- Complete meditation guidance for each chaplet
+
+### 🏠 User Interface Overhaul
+**New Prayer Selection Hub:**
+- Main landing page showing all prayer options
+- Visual progress indicators for novenas and streaks
+- Seamless navigation between prayer types
+- Info buttons explaining each devotion
+
+**Enhanced Prayer Experience:**
+- Updated mystery headers with traditional Catholic reflections
+- Contextual prayer steps based on novena vs daily rosary
+- Home button navigation from novena screen
+- Prayer info modals for education
+
+### 📱 App Rebranding & Polish
+**Complete Rebrand to "Ora: Rosary & Devotion Tracker":**
+- Updated app title, metadata, and branding throughout
+- New package name: ora-rosary-devotion-tracker
+- Enhanced HTML meta tags and Open Graph data
+- Professional email subject lines
+
+**Trial & Payment Improvements:**
+- Trial banner added to prayer selection screen
+- Platform-specific payment handling for Google Play compliance
+- Enhanced paywall system with better user experience
+- Improved subscription management
+
+### 🔧 Technical Improvements
+**Architecture & Performance:**
+- Dual state management (novena + rosary streak)
+- Comprehensive TypeScript interfaces
+- localStorage persistence for both prayer types
+- Major code cleanup and optimization
+- Fixed compilation errors and infinite refresh loops
+
+**New Components Added:**
+- PrayerSelectionScreen.tsx - Main landing page
+- RosarySelectionModal.tsx - Mystery selection
+- ChapletSelectionModal.tsx - Chaplet selection
+- NovenaTrackingScreen.tsx - Dedicated novena tracking
+- PrayerInfoModal.tsx - Educational content
+- rosaryStreak.ts - Complete streak tracking system
+
+### 🔮 Virtual Rosary Innovation
+**Latest Addition - Interactive Virtual Rosary:**
+- Bead-by-bead visual progress tracking
+- Touch any bead to jump to specific prayers
+- Multi-sensory feedback (haptic + audio)
+- Beautiful animations and visual effects
+- Comprehensive prayer step mapping with unit tests
+
 ## Previous Versions
 
-### v0.2.0
-- Comprehensive rebrand to "Ora: Rosary & Devotion Tracker"
-- Google Play Store compliance improvements
-- Enhanced payment handling
-- Trial experience improvements
-
-### v0.1.0
-- Initial release with 54-Day Novena tracking
-- Basic rosary prayers
-- Streak tracking
+### v0.2.0 (September 2025)
+- Initial Google Play Store release
+- Basic 54-Day Novena tracking
+- Simple rosary prayers
+- Notification system
 - Dark mode support
+
+### v0.1.0 (Initial Development)
+- Core novena tracking functionality
+- Basic prayer modal
+- Progress persistence
+- Foundational architecture
