@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { X, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
 import { MysteryType, ChapletType, NovenaPhase, PrayerType } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES, MYSTERY_REFLECTIONS } from '../../constants/novena';
 import { CHAPLET_INFO, CHAPLET_PRAYERS } from '../../constants/chaplets';
 import { ExpandablePrayer } from '../common/ExpandablePrayer';
 import { getPrayerText } from '../../constants/commonPrayers';
+import { VirtualRosaryDrawer } from '../prayer/VirtualRosaryDrawer';
+import { RosaryToggleButton } from '../prayer/RosaryToggleButton';
+import { BeadSequence } from '../../constants/rosarySequences';
+import { getBeadIndexForStep, getStepIndexForBead } from '../../utils/rosaryMapping';
 import { 
   requestWakeLock, 
   releaseWakeLock, 
   getKeepScreenAwakePreference 
 } from '../../utils/screenWakeLock';
+import { audioFeedback, useAudioPreference } from '../../utils/audioFeedback';
 
 interface PrayerModalProps {
   isOpen: boolean;
@@ -43,6 +48,40 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   onComplete
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [showRosaryDrawer, setShowRosaryDrawer] = useState(false);
+  const [currentBeadIndex, setCurrentBeadIndex] = useState(0);
+  const audioEnabled = useAudioPreference();
+
+  // Generate unique key for this prayer session
+  const prayerSessionKey = `prayer_progress_${prayerType}_${chaplet || mystery || 'default'}_${currentDay || 0}`;
+
+  // Load saved progress when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      const savedProgress = localStorage.getItem(prayerSessionKey);
+      if (savedProgress) {
+        try {
+          const { stepIndex, beadIndex } = JSON.parse(savedProgress);
+          setCurrentStepIndex(stepIndex);
+          setCurrentBeadIndex(beadIndex);
+        } catch (error) {
+          console.warn('Failed to parse saved prayer progress:', error);
+        }
+      }
+    }
+  }, [isOpen, prayerSessionKey]);
+
+  // Save progress whenever step changes
+  useEffect(() => {
+    if (isOpen && currentStepIndex > 0) {
+      const progressData = {
+        stepIndex: currentStepIndex,
+        beadIndex: currentBeadIndex,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(prayerSessionKey, JSON.stringify(progressData));
+    }
+  }, [currentStepIndex, currentBeadIndex, isOpen, prayerSessionKey]);
 
   // Handle wake lock when modal opens/closes
   useEffect(() => {
@@ -55,6 +94,20 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
       releaseWakeLock();
     };
   }, [isOpen]);
+
+  // Initialize bead position when modal opens or prayer type changes
+  useEffect(() => {
+    if (isOpen) {
+      const initialBeadIndex = getBeadIndexForStep(currentStepIndex, prayerType, chaplet);
+      setCurrentBeadIndex(initialBeadIndex);
+    }
+  }, [isOpen, prayerType, chaplet, currentStepIndex]);
+
+  // Update bead position when step changes (auto-advance)
+  useEffect(() => {
+    const newBeadIndex = getBeadIndexForStep(currentStepIndex, prayerType, chaplet);
+    setCurrentBeadIndex(newBeadIndex);
+  }, [currentStepIndex, prayerType, chaplet]);
 
   if (!isOpen) return null;
 
@@ -244,23 +297,72 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   const isFirstStep = currentStepIndex === 0;
   const isLastStep = currentStepIndex === prayerSteps.length - 1;
 
+  // Handle bead click - navigate to corresponding prayer step
+  const handleBeadClick = (beadIndex: number, bead: BeadSequence) => {
+    setCurrentBeadIndex(beadIndex);
+    
+    // Use the comprehensive mapping system to find the corresponding step
+    const stepIndex = getStepIndexForBead(beadIndex, prayerType, chaplet);
+    
+    if (stepIndex !== currentStepIndex && stepIndex < prayerSteps.length) {
+      setCurrentStepIndex(stepIndex);
+      
+      // Trigger audio feedback for manual bead navigation
+      if (audioEnabled) {
+        audioFeedback.beadTransition();
+      }
+    }
+  };
+
   const nextStep = () => {
     if (!isLastStep) {
-      setCurrentStepIndex(prev => prev + 1);
+      setCurrentStepIndex(prev => {
+        const newIndex = prev + 1;
+        
+        // Trigger audio feedback based on step type
+        if (audioEnabled) {
+          const nextStepData = prayerSteps[newIndex];
+          
+          if (nextStepData?.type === 'mysteries') {
+            audioFeedback.mysteryTransition();
+          } else if (nextStepData?.type === 'decades') {
+            audioFeedback.decadeComplete();
+          } else if (newIndex === prayerSteps.length - 1) {
+            audioFeedback.prayerComplete();
+          } else {
+            audioFeedback.stepAdvance();
+          }
+        }
+        
+        return newIndex;
+      });
+      // Bead index will be updated automatically by useEffect
     }
   };
 
   const prevStep = () => {
     if (!isFirstStep) {
       setCurrentStepIndex(prev => prev - 1);
+      // Bead index will be updated automatically by useEffect
     }
   };
 
   const handleComplete = () => {
+    // Clear saved progress when prayer is completed
+    localStorage.removeItem(prayerSessionKey);
+    
     releaseWakeLock();
     onComplete();
     onClose();
     setCurrentStepIndex(0);
+    setCurrentBeadIndex(0);
+  };
+
+  const handleResetProgress = () => {
+    // Clear saved progress and restart from beginning
+    localStorage.removeItem(prayerSessionKey);
+    setCurrentStepIndex(0);
+    setCurrentBeadIndex(0);
   };
 
   const renderContent = (content: string | string[], type: string) => {
@@ -348,12 +450,34 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
               Step {currentStepIndex + 1} of {prayerSteps.length}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Reset Progress Button - only show if there's progress to reset */}
+            {currentStepIndex > 0 && (
+              <button
+                onClick={handleResetProgress}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                title="Reset prayer progress"
+                aria-label="Reset prayer progress to beginning"
+              >
+                <RotateCcw className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </button>
+            )}
+            
+            {/* Rosary Toggle Button - only show for rosary prayers (experimental feature) */}
+            {(prayerType === 'daily-rosary' || prayerType === '54-day-novena') && (
+              <RosaryToggleButton
+                onClick={() => setShowRosaryDrawer(!showRosaryDrawer)}
+                isOpen={showRosaryDrawer}
+                side="right"
+              />
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+          </div>
         </div>
 
         {/* Progress bar */}
@@ -412,6 +536,18 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
           </div>
         </div>
       </div>
+      
+      {/* Virtual Rosary Drawer - only show for rosary prayers (experimental feature) */}
+      {(prayerType === 'daily-rosary' || prayerType === '54-day-novena') && (
+        <VirtualRosaryDrawer
+          isOpen={showRosaryDrawer}
+          onClose={() => setShowRosaryDrawer(false)}
+          side="right"
+          prayerType={prayerType}
+          currentBeadIndex={currentBeadIndex}
+          onBeadClick={handleBeadClick}
+        />
+      )}
     </div>
   );
 };

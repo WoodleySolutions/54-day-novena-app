@@ -21,6 +21,7 @@ Ora serves as a complete digital prayer guide for Catholics, featuring multiple 
 
 ### Daily Rosary Features
 - **Mystery selection** - Choose from Joyful, Sorrowful, Glorious, or Luminous mysteries
+- **Virtual rosary** - Interactive bead-by-bead rosary with synchronized prayer steps
 - **Streak tracking** - Monitor consecutive days of prayer with statistics
 - **Flexible prayer schedule** - Pray any mystery at any time
 - **Traditional day suggestions** - Recommended mysteries for each day of the week
@@ -36,6 +37,8 @@ Ora serves as a complete digital prayer guide for Catholics, featuring multiple 
 
 ### Prayer Experience
 - Complete rosary structure from opening prayers to closing prayers
+- **Virtual rosary beads** with visual feedback and synchronized prayer progression
+- **Enhanced multi-sensory feedback** including haptic vibration and audio cues
 - Individual decade guidance with mystery meditation
 - Traditional Catholic prayers including Hail Holy Queen and Rosary Prayer
 - Phase-specific closing prayers adapted for petition vs thanksgiving periods

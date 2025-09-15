@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info } from 'lucide-react';
+import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info, Settings } from 'lucide-react';
 import { RosaryStreakData, NovenaState } from '../../types';
 import { calculateCompletionPercentage } from '../../utils/novenaCalculations';
 import { TOTAL_DAYS } from '../../constants/novena';
@@ -19,6 +19,7 @@ interface PrayerSelectionScreenProps {
   onShowNovenaInfo?: () => void;
   onShowRosaryInfo?: () => void;
   onShowChapletInfo?: () => void;
+  onShowSettings?: () => void;
 }
 
 export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
@@ -32,7 +33,8 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   onUpgradeClick,
   onShowNovenaInfo,
   onShowRosaryInfo,
-  onShowChapletInfo
+  onShowChapletInfo,
+  onShowSettings
 }) => {
   const { currentDay, completedDays, startDate } = novenaState;
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
@@ -71,7 +73,18 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="relative text-center mb-8">
+        {/* Settings Button */}
+        {onShowSettings && (
+          <button
+            onClick={onShowSettings}
+            className="absolute top-0 right-0 p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors duration-200"
+            title="Settings"
+          >
+            <Settings className="w-6 h-6" />
+          </button>
+        )}
+        
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
           🌹 Ora
         </h1>

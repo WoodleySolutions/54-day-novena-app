@@ -112,10 +112,120 @@ export const SACRED_HEART_MEDITATIONS = [
   }
 ];
 
+// Precious Blood Meditations
+export const PRECIOUS_BLOOD_MEDITATIONS = [
+  {
+    mystery: "The Circumcision",
+    meditation: "The first drops of Jesus' precious Blood are shed when He receives His holy Name."
+  },
+  {
+    mystery: "The Agony in the Garden",
+    meditation: "In His agony, Jesus sweats Blood, showing His perfect humanity united to perfect divinity."
+  },
+  {
+    mystery: "The Scourging",
+    meditation: "Every stripe draws precious Blood from the sacred Body of our Savior for our healing."
+  },
+  {
+    mystery: "The Crowning with Thorns",
+    meditation: "The thorns pierce the sacred Head, and precious Blood flows to wash away our pride."
+  }
+];
+
+// Holy Face Meditations
+export const HOLY_FACE_MEDITATIONS = [
+  {
+    focus: "Reparation",
+    meditation: "Make reparation to the Holy Face of Jesus, disfigured by sin and blasphemy."
+  }
+];
+
+// Immaculate Heart Meditations
+export const IMMACULATE_HEART_MEDITATIONS = [
+  {
+    mystery: "The Annunciation",
+    meditation: "Mary's 'Yes' to God - her perfect response to divine will."
+  },
+  {
+    mystery: "The Visitation", 
+    meditation: "Mary's service to others - carrying Christ to those in need."
+  },
+  {
+    mystery: "The Nativity",
+    meditation: "Mary's gift to the world - offering Jesus to all humanity."
+  },
+  {
+    mystery: "The Presentation",
+    meditation: "Mary's offering to God - complete surrender to His plan."
+  },
+  {
+    mystery: "The Finding in the Temple",
+    meditation: "Mary's pondering heart - treasuring all things in her heart."
+  }
+];
+
+// St. Joseph Meditations
+export const ST_JOSEPH_MEDITATIONS = [
+  {
+    role: "Spouse of Mary",
+    meditation: "St. Joseph as the chosen spouse of the Blessed Virgin Mary."
+  },
+  {
+    role: "Foster Father of Jesus",
+    meditation: "St. Joseph's loving care for the Christ Child."
+  },
+  {
+    role: "Patron of the Church",
+    meditation: "St. Joseph as protector and guardian of Christ's mystical body."
+  }
+];
+
+// Five Wounds Meditations
+export const FIVE_WOUNDS_MEDITATIONS = [
+  {
+    wound: "Left Hand",
+    meditation: "The nail pierces His left hand, the hand that blessed and healed so many."
+  },
+  {
+    wound: "Right Hand",
+    meditation: "The nail pierces His right hand, showing us the price of our redemption."
+  },
+  {
+    wound: "Left Foot",
+    meditation: "His feet, which walked to bring the Good News, are pierced for our salvation."
+  },
+  {
+    wound: "Right Foot", 
+    meditation: "Both feet are nailed together, completing the sacrifice of love."
+  },
+  {
+    wound: "Sacred Side",
+    meditation: "The lance opens His side, and from it flows blood and water - the sacraments of the Church."
+  }
+];
+
+// St. Bridget Meditations
+export const ST_BRIDGET_MEDITATIONS = [
+  {
+    focus: "Seven Last Words",
+    meditation: "Meditate on Christ's final words from the cross, each revealing His perfect love."
+  },
+  {
+    focus: "Seven Sorrows and Joys",
+    meditation: "Remember Mary's sorrows and joys, asking her to obtain the grace of true contrition."
+  }
+];
+
 // Chaplet meditation mappings
 export const CHAPLET_MEDITATIONS: Record<ChapletType, any> = {
   'seven-sorrows': SEVEN_SORROWS_MEDITATIONS,
   'divine-mercy': DIVINE_MERCY_MEDITATIONS, 
   'st-michael': ST_MICHAEL_MEDITATIONS,
-  'sacred-heart': SACRED_HEART_MEDITATIONS
+  'sacred-heart': SACRED_HEART_MEDITATIONS,
+  'precious-blood': PRECIOUS_BLOOD_MEDITATIONS,
+  'holy-face': HOLY_FACE_MEDITATIONS,
+  'immaculate-heart': IMMACULATE_HEART_MEDITATIONS,
+  'st-joseph': ST_JOSEPH_MEDITATIONS,
+  'five-wounds': FIVE_WOUNDS_MEDITATIONS,
+  'st-bridget': ST_BRIDGET_MEDITATIONS
 };

@@ -2,7 +2,7 @@ export type NovenaPhase = 'petition' | 'thanksgiving';
 
 export type MysteryType = 'Joyful' | 'Sorrowful' | 'Glorious' | 'Luminous';
 
-export type ChapletType = 'divine-mercy' | 'st-michael' | 'sacred-heart' | 'seven-sorrows';
+export type ChapletType = 'divine-mercy' | 'st-michael' | 'sacred-heart' | 'seven-sorrows' | 'precious-blood' | 'holy-face' | 'immaculate-heart' | 'st-joseph' | 'five-wounds' | 'st-bridget';
 
 export interface CycleInfo {
   phase: NovenaPhase;

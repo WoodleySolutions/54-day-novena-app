@@ -12,6 +12,7 @@ import { PrayerModal } from './components/modals/PrayerModal';
 import { PaywallModal } from './components/modals/PaywallModal';
 import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
 import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
+import { SettingsModal } from './components/modals/SettingsModal';
 
 // Utilities
 import { 
@@ -40,6 +41,7 @@ const App: React.FC = () => {
   const [showNovenaInfo, setShowNovenaInfo] = useState(false);
   const [showRosaryInfo, setShowRosaryInfo] = useState(false);
   const [showChapletInfo, setShowChapletInfo] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
@@ -191,6 +193,17 @@ const App: React.FC = () => {
     setShowChapletInfo(true);
   };
 
+  const handleShowSettings = () => {
+    setShowSettings(true);
+  };
+
+  const handleClearData = () => {
+    // This would typically clear rosary streak data and novena data
+    // For now, just console.log as a placeholder  
+    console.log('Clear data requested');
+    setShowSettings(false);
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -209,6 +222,7 @@ const App: React.FC = () => {
             onShowNovenaInfo={handleShowNovenaInfo}
             onShowRosaryInfo={handleShowRosaryInfo}
             onShowChapletInfo={handleShowChapletInfo}
+            onShowSettings={handleShowSettings}
           />
         )}
 
@@ -271,6 +285,13 @@ const App: React.FC = () => {
           isOpen={showChapletInfo}
           onClose={() => setShowChapletInfo(false)}
           prayerInfo={CHAPLET_INFO}
+        />
+
+        <SettingsModal
+          isOpen={showSettings}
+          onClose={() => setShowSettings(false)}
+          onClearData={handleClearData}
+          onUpgradeClick={handleUpgradeClick}
         />
 
       </div>
