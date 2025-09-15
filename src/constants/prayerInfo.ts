@@ -7,7 +7,7 @@ export interface PrayerInfo {
   historicalBackground?: string;
 }
 
-export const NOVENA_INFO: PrayerInfo = {
+export const FIFTY_FOUR_DAY_NOVENA_INFO: PrayerInfo = {
   title: "54-Day Novena to Our Lady of the Rosary",
   origin: "This powerful devotion was revealed by Our Lady herself to Fortuna Agrelli in Naples, Italy, in 1884.",
   meaning: "The 54-Day Novena consists of saying the Rosary for 54 consecutive days: 27 days in petition (asking for a favor) followed by 27 days in thanksgiving (whether the petition is granted or not).",
@@ -24,6 +24,27 @@ export const NOVENA_INFO: PrayerInfo = {
     "Often results in remarkable spiritual and temporal graces"
   ],
   historicalBackground: "The devotion gained papal approval and has been practiced by countless Catholics worldwide, with numerous documented miracles and spiritual conversions attributed to its faithful practice."
+};
+
+export const NOVENA_INFO: PrayerInfo = {
+  title: "Traditional Novenas",
+  origin: "Novenas are nine-day periods of prayer that have been practiced since the early Church, inspired by the nine days the Apostles and Mary spent in prayer between Christ's Ascension and Pentecost.",
+  meaning: "A novena (from the Latin 'novem,' meaning nine) is a devotional practice of praying for a specific intention for nine consecutive days, often directed to Jesus, Mary, or a particular saint.",
+  context: [
+    "The practice is rooted in Scripture - the Apostles prayed for nine days between Ascension and Pentecost (Acts 1:14).",
+    "Each novena focuses on specific spiritual themes and the intercession of particular saints or aspects of Christ's life.",
+    "Novenas can be prayed individually or in community, and many carry special indulgences when prayed with proper disposition.",
+    "The nine-day period represents spiritual completeness and perseverance in prayer."
+  ],
+  spiritualBenefits: [
+    "Develops consistency and perseverance in prayer life",
+    "Deepens devotion to specific saints and spiritual themes",
+    "Provides focused spiritual preparation for feast days",
+    "Strengthens trust in the communion of saints and their intercession",
+    "Cultivates patience and faithfulness in seeking God's will",
+    "Often brings spiritual clarity and peace regarding specific intentions"
+  ],
+  historicalBackground: "Novenas have been approved and encouraged by the Church throughout history. Many saints practiced novenas, and numerous miracles and spiritual graces have been attributed to faithful novena prayer."
 };
 
 export const ROSARY_INFO: PrayerInfo = {

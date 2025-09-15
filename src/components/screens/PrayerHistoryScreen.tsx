@@ -7,7 +7,7 @@ interface PrayerHistoryScreenProps {
   onBack: () => void;
 }
 
-type FilterType = 'all' | '54-day-novena' | 'daily-rosary' | 'chaplet';
+type FilterType = 'all' | '54-day-novena' | 'daily-rosary' | 'chaplet' | 'novena';
 type TimeFilter = 'all' | 'week' | 'month' | 'year';
 
 export const PrayerHistoryScreen: React.FC<PrayerHistoryScreenProps> = ({ onBack }) => {
@@ -212,7 +212,7 @@ export const PrayerHistoryScreen: React.FC<PrayerHistoryScreenProps> = ({ onBack
                     Prayer Type
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {(['all', '54-day-novena', 'daily-rosary', 'chaplet'] as FilterType[]).map((type) => (
+                    {(['all', '54-day-novena', 'daily-rosary', 'chaplet', 'novena'] as FilterType[]).map((type) => (
                       <button
                         key={type}
                         onClick={() => setFilterType(type)}

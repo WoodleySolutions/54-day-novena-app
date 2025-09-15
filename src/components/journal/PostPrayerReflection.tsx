@@ -115,7 +115,7 @@ export const PostPrayerReflection: React.FC<PostPrayerReflectionProps> = ({
   const hasContent = reflection.trim() || selectedMood || gratitudes.length > 0 || insights.trim() || tags.length > 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300 max-h-[80vh] overflow-y-auto">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 transition-colors duration-300">
       <div className="text-center mb-6">
         <div className="flex items-center justify-center mb-3">
           <div className="bg-gradient-to-r from-green-500 to-blue-600 p-3 rounded-full">

@@ -4,6 +4,8 @@ export type MysteryType = 'Joyful' | 'Sorrowful' | 'Glorious' | 'Luminous';
 
 export type ChapletType = 'divine-mercy' | 'st-michael' | 'sacred-heart' | 'seven-sorrows' | 'precious-blood' | 'holy-face' | 'immaculate-heart' | 'st-joseph' | 'five-wounds' | 'st-bridget';
 
+export type NovenaType = 'divine-mercy' | 'sacred-heart' | 'st-joseph' | 'immaculate-heart' | 'st-therese' | 'st-jude' | 'st-anthony' | 'blessed-mother' | 'holy-spirit';
+
 export interface CycleInfo {
   phase: NovenaPhase;
   cycle: number;
@@ -33,7 +35,7 @@ export interface StorageState {
 }
 
 // New types for expanded prayer system
-export type PrayerType = '54-day-novena' | 'daily-rosary' | 'chaplet';
+export type PrayerType = '54-day-novena' | 'daily-rosary' | 'chaplet' | 'novena';
 
 export type AppScreen = 'selection' | 'novena' | 'rosary-modal' | 'history';
 
@@ -59,6 +61,48 @@ export interface ChapletStep {
   prayer?: string;
 }
 
+// Novena-specific interfaces
+export interface NovenaInfo {
+  name: string;
+  description: string;
+  color: string;
+  icon: string;
+  patron?: string;
+  feastDay?: string;
+  estimatedDuration: number; // in minutes
+}
+
+export interface NovenaDay {
+  day: number;
+  title: string;
+  content: string | string[];
+  prayer?: string;
+  reflection?: string;
+  scripture?: string;
+}
+
+export interface ActiveNovena {
+  id: string;
+  type: NovenaType;
+  startDate: string;
+  currentDay: number;
+  completedDays: Set<number>;
+  isCompleted: boolean;
+  intention?: string;
+}
+
+export interface NovenaSession {
+  id: string;
+  novenaId: string;
+  novenaType: NovenaType;
+  day: number;
+  date: string;
+  completed: boolean;
+  intention?: string;
+  reflection?: string;
+  duration?: number;
+}
+
 export interface RosarySession {
   id: string;
   userId?: string; // Future: link to user account
@@ -72,6 +116,8 @@ export interface RosarySession {
   prayerType: PrayerType;
   mystery?: MysteryType; // Optional for chaplets
   chaplet?: ChapletType; // New for chaplet prayers
+  novena?: NovenaType; // New for novena prayers
+  novenaId?: string; // Link to active novena
   currentDay?: number; // For novena tracking
   completed: boolean;
   duration?: number;
@@ -96,21 +142,28 @@ export interface RosaryStreakData {
 export interface AppState {
   // Navigation
   currentScreen: AppScreen;
-  
+
   // Existing novena state
   novenaState: NovenaState;
-  
+
   // New rosary streak state
   rosaryStreak: RosaryStreakData;
-  
+
+  // Active novenas tracking
+  activeNovenas: ActiveNovena[];
+
   // Modal states
   showRosarySelection: boolean;
   showPrayerModal: boolean;
-  
+  showNovenaSelection: boolean;
+
   // Current prayer context
   currentPrayer?: {
     type: PrayerType;
     mystery: MysteryType;
+    novena?: NovenaType;
+    novenaId?: string;
+    day?: number;
     intention?: string;
     sessionId?: string;
   };

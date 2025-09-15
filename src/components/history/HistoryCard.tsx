@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Calendar, Clock, Heart, MessageCircle, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 import { RosarySession, MysteryType } from '../../types';
 import { CHAPLET_INFO } from '../../constants/chaplets';
+import { NOVENA_INFO } from '../../constants/novenas';
 
 interface HistoryCardProps {
   session: RosarySession;
@@ -40,6 +41,11 @@ const getPrayerTypeDisplay = (session: RosarySession): { name: string; color: st
       return {
         name: session.chaplet ? CHAPLET_INFO[session.chaplet].name : 'Chaplet',
         color: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-200'
+      };
+    case 'novena':
+      return {
+        name: session.novena ? `${NOVENA_INFO[session.novena].name}${session.currentDay ? ` - Day ${session.currentDay}` : ''}` : 'Novena',
+        color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200'
       };
     default:
       return {

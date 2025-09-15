@@ -55,6 +55,18 @@ This release introduces a comprehensive prayer journal system to enhance your sp
 - Resolved duplicate parameter issues in search functionality
 - Cleaned up unused imports and linting warnings
 
+#### Novena Experience Improvements
+- **Fixed novena info button** - Now properly opens educational modal explaining traditional novenas
+- **Fixed three-dot menu functionality** - Novena tile options now respond correctly to user interaction
+- **Corrected theological terminology** - Changed "Patron Saint" to "Patron" to avoid incorrectly labeling Jesus Christ and Holy Spirit as saints
+- **Resolved novena intention loop bug** - Fixed critical issue where users got stuck in endless "Set your intention" screens
+- **Eliminated double scrollbars** - Fixed UI issue in prayer reflection modal where nested scroll containers created confusing double scrollbars
+
+#### Enhanced Novena Information System
+- **Separated novena documentation** - Split general novena information from 54-day novena specific content
+- **Added authentic Catholic content** - Comprehensive explanation of traditional novena practices and their spiritual significance
+- **Improved educational modals** - Better organized information panels for different prayer types
+
 ### 📱 Compatibility
 - Fully compatible with existing prayer tracking features
 - Maintains all v0.3.0 functionality including virtual rosary

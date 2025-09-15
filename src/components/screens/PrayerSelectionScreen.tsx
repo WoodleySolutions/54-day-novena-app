@@ -1,21 +1,27 @@
 import React from 'react';
 import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info, Settings, History, MessageCircle, Tag } from 'lucide-react';
-import { RosaryStreakData, NovenaState } from '../../types';
+import { RosaryStreakData, NovenaState, ActiveNovena } from '../../types';
 import { calculateCompletionPercentage } from '../../utils/novenaCalculations';
 import { TOTAL_DAYS } from '../../constants/novena';
 import { CHAPLET_INFO } from '../../constants/chaplets';
 import { TrialBanner } from '../common/TrialBanner';
 import { AppFooter } from '../common/AppFooter';
+import { MyNovenas } from '../novenas/MyNovenas';
 
 interface PrayerSelectionScreenProps {
   novenaState: NovenaState;
   rosaryStreak: RosaryStreakData;
+  activeNovenas: ActiveNovena[];
   onStartNovena: () => void;
   onContinueNovena: () => void;
   onPrayRosary: () => void;
   onPrayChaplet: () => void;
+  onContinueIndividualNovena: (novenaId: string) => void;
+  onStartNewNovena: () => void;
+  onRemoveNovena?: (novenaId: string) => void;
   hasAccess: boolean;
   onUpgradeClick: () => void;
+  onShow54DayNovenaInfo?: () => void;
   onShowNovenaInfo?: () => void;
   onShowRosaryInfo?: () => void;
   onShowChapletInfo?: () => void;
@@ -26,12 +32,17 @@ interface PrayerSelectionScreenProps {
 export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   novenaState,
   rosaryStreak,
+  activeNovenas,
   onStartNovena,
   onContinueNovena,
   onPrayRosary,
   onPrayChaplet,
+  onContinueIndividualNovena,
+  onStartNewNovena,
+  onRemoveNovena,
   hasAccess,
   onUpgradeClick,
+  onShow54DayNovenaInfo,
   onShowNovenaInfo,
   onShowRosaryInfo,
   onShowChapletInfo,
@@ -130,9 +141,9 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
               <Calendar className="w-6 h-6 text-white" />
               <h2 className="text-xl font-semibold text-white">54-Day Novena to Our Lady</h2>
             </div>
-            {onShowNovenaInfo && (
+            {onShow54DayNovenaInfo && (
               <button
-                onClick={onShowNovenaInfo}
+                onClick={onShow54DayNovenaInfo}
                 className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
                 title="Learn about the 54-Day Novena"
               >
@@ -278,6 +289,34 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
             <BookOpen className="w-5 h-5" />
             Pray Today's Rosary
           </button>
+        </div>
+      </div>
+
+      {/* Novenas Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-white" />
+              <h2 className="text-xl font-semibold text-white">Novenas</h2>
+            </div>
+            <button
+              onClick={onShowNovenaInfo}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-full transition-colors"
+              title="Learn about Novenas"
+            >
+              <Info className="w-5 h-5 text-white" />
+            </button>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <MyNovenas
+            activeNovenas={activeNovenas}
+            onContinueNovena={onContinueIndividualNovena}
+            onStartNewNovena={onStartNewNovena}
+            onRemoveNovena={onRemoveNovena}
+          />
         </div>
       </div>
 

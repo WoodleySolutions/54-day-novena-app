@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AppScreen, MysteryType, ChapletType, RosarySession, MoodType } from './types';
+import { AppScreen, MysteryType, ChapletType, RosarySession, MoodType, NovenaType, ActiveNovena } from './types';
 import { useSubscription } from './contexts/SubscriptionContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 
@@ -9,6 +9,8 @@ import { PrayerHistoryScreen } from './components/screens/PrayerHistoryScreen';
 import NovenaTrackingScreen from './components/screens/NovenaTrackingScreen';
 import { RosarySelectionModal } from './components/modals/RosarySelectionModal';
 import { ChapletSelectionModal } from './components/modals/ChapletSelectionModal';
+import { NovenaSelectionModal } from './components/modals/NovenaSelectionModal';
+import { NovenaModal } from './components/modals/NovenaModal';
 import { PrayerModal } from './components/modals/PrayerModal';
 import { PaywallModal } from './components/modals/PaywallModal';
 import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
@@ -16,17 +18,24 @@ import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
 import { SettingsModal } from './components/modals/SettingsModal';
 
 // Utilities
-import { 
-  loadRosaryStreakData, 
-  saveRosaryStreakData, 
-  createRosarySession, 
+import {
+  loadRosaryStreakData,
+  saveRosaryStreakData,
+  createRosarySession,
   createChapletSession,
-  completeRosarySession 
+  completeRosarySession
 } from './utils/rosaryStreak';
+import {
+  loadActiveNovenas,
+  startNovena,
+  completeNovenaDay,
+  getNovenaById,
+  removeNovena
+} from './utils/novenaTracking';
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
-import { NOVENA_INFO, ROSARY_INFO, CHAPLET_INFO } from './constants/prayerInfo';
+import { FIFTY_FOUR_DAY_NOVENA_INFO, NOVENA_INFO, ROSARY_INFO, CHAPLET_INFO } from './constants/prayerInfo';
 import './utils/devHelpers'; // Load development utilities
 
 const App: React.FC = () => {
@@ -36,19 +45,24 @@ const App: React.FC = () => {
   // Modal states
   const [showRosarySelection, setShowRosarySelection] = useState(false);
   const [showChapletSelection, setShowChapletSelection] = useState(false);
+  const [showNovenaSelection, setShowNovenaSelection] = useState(false);
+  const [showNovenaModal, setShowNovenaModal] = useState(false);
   const [showPrayerModal, setShowPrayerModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [show54DayNovenaInfo, setShow54DayNovenaInfo] = useState(false);
   const [showNovenaInfo, setShowNovenaInfo] = useState(false);
   const [showRosaryInfo, setShowRosaryInfo] = useState(false);
   const [showChapletInfo, setShowChapletInfo] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  
+
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
-  
-  // Rosary streak data
+  const [currentNovena, setCurrentNovena] = useState<{ novenaId: string; novenaType: NovenaType; day: number } | null>(null);
+
+  // Prayer data
   const [rosaryStreakData, setRosaryStreakData] = useState(() => loadRosaryStreakData());
+  const [activeNovenas, setActiveNovenas] = useState<ActiveNovena[]>(() => loadActiveNovenas());
   
   // Subscription and Novena state
   const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen } = useSubscription();
@@ -100,6 +114,66 @@ const App: React.FC = () => {
 
   const handlePrayChaplet = () => {
     setShowChapletSelection(true);
+  };
+
+  // Novena handlers
+  const handleStartNewNovena = () => {
+    setShowNovenaSelection(true);
+  };
+
+  const handleContinueIndividualNovena = (novenaId: string) => {
+    const novena = getNovenaById(novenaId);
+    if (novena) {
+      const nextDay = Math.min(novena.currentDay, 9);
+      setCurrentNovena({
+        novenaId: novena.id,
+        novenaType: novena.type,
+        day: nextDay
+      });
+      setShowNovenaModal(true);
+    }
+  };
+
+  const handleNovenaSelection = (novenaType: NovenaType) => {
+    const newNovena = startNovena(novenaType);
+    setActiveNovenas(prev => [...prev, newNovena]);
+
+    setCurrentNovena({
+      novenaId: newNovena.id,
+      novenaType: newNovena.type,
+      day: 1
+    });
+
+    setShowNovenaSelection(false);
+    setShowNovenaModal(true);
+  };
+
+  const handleRemoveNovena = (novenaId: string) => {
+    const success = removeNovena(novenaId);
+    if (success) {
+      setActiveNovenas(prev => prev.filter(n => n.id !== novenaId));
+    }
+  };
+
+  const handleNovenaComplete = (journalData?: {
+    intention?: string;
+    reflection?: string;
+    mood?: MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }) => {
+    if (currentNovena) {
+      const result = completeNovenaDay(currentNovena.novenaId, currentNovena.day, journalData);
+      if (result) {
+        setActiveNovenas(prev =>
+          prev.map(n => n.id === result.novena.id ? result.novena : n)
+        );
+      }
+    }
+
+    setCurrentNovena(null);
+    setShowNovenaModal(false);
   };
 
   // Rosary selection handlers
@@ -191,6 +265,10 @@ const App: React.FC = () => {
   };
 
   // Info modal handlers
+  const handleShow54DayNovenaInfo = () => {
+    setShow54DayNovenaInfo(true);
+  };
+
   const handleShowNovenaInfo = () => {
     setShowNovenaInfo(true);
   };
@@ -227,12 +305,17 @@ const App: React.FC = () => {
           <PrayerSelectionScreen
             novenaState={novenaState}
             rosaryStreak={rosaryStreakData}
+            activeNovenas={activeNovenas}
             onStartNovena={handleStartNovena}
             onContinueNovena={handleContinueNovena}
             onPrayRosary={handlePrayRosary}
             onPrayChaplet={handlePrayChaplet}
+            onContinueIndividualNovena={handleContinueIndividualNovena}
+            onStartNewNovena={handleStartNewNovena}
+            onRemoveNovena={handleRemoveNovena}
             hasAccess={hasAccess}
             onUpgradeClick={handleUpgradeClick}
+            onShow54DayNovenaInfo={handleShow54DayNovenaInfo}
             onShowNovenaInfo={handleShowNovenaInfo}
             onShowRosaryInfo={handleShowRosaryInfo}
             onShowChapletInfo={handleShowChapletInfo}
@@ -267,6 +350,27 @@ const App: React.FC = () => {
           onSelectChaplet={handleChapletSelection}
         />
 
+        <NovenaSelectionModal
+          isOpen={showNovenaSelection}
+          onClose={() => setShowNovenaSelection(false)}
+          onSelectNovena={handleNovenaSelection}
+        />
+
+        {currentNovena && (
+          <NovenaModal
+            isOpen={showNovenaModal}
+            novenaType={currentNovena.novenaType}
+            novenaId={currentNovena.novenaId}
+            currentDay={currentNovena.day}
+            existingIntention={activeNovenas.find(n => n.id === currentNovena.novenaId)?.intention}
+            onClose={() => {
+              setShowNovenaModal(false);
+              setCurrentNovena(null);
+            }}
+            onComplete={handleNovenaComplete}
+          />
+        )}
+
         <PrayerModal
           isOpen={showPrayerModal}
           prayerType={currentPrayerSession?.prayerType || 'daily-rosary'}
@@ -290,6 +394,12 @@ const App: React.FC = () => {
         />
 
         {/* Prayer Info Modals */}
+        <PrayerInfoModal
+          isOpen={show54DayNovenaInfo}
+          onClose={() => setShow54DayNovenaInfo(false)}
+          prayerInfo={FIFTY_FOUR_DAY_NOVENA_INFO}
+        />
+
         <PrayerInfoModal
           isOpen={showNovenaInfo}
           onClose={() => setShowNovenaInfo(false)}

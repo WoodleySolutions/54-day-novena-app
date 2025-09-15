@@ -5,12 +5,14 @@ interface ExpandablePrayerProps {
   prayerName: string;
   prayerText: string;
   className?: string;
+  disableScroll?: boolean;
 }
 
 export const ExpandablePrayer: React.FC<ExpandablePrayerProps> = ({
   prayerName,
   prayerText,
-  className = ''
+  className = '',
+  disableScroll = false
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -34,7 +36,7 @@ export const ExpandablePrayer: React.FC<ExpandablePrayerProps> = ({
       
       {isExpanded && (
         <div className="px-3 pb-3 border-t border-gray-200 dark:border-gray-600 transition-colors duration-300">
-          <div className="pt-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line italic">
+          <div className={`pt-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line italic ${!disableScroll ? 'max-h-96 overflow-y-auto' : ''}`}>
             {prayerText}
           </div>
         </div>
