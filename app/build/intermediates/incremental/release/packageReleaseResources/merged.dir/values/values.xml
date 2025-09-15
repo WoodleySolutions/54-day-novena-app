@@ -11,7 +11,7 @@
     <color name="navigationDividerColorDark">#000000</color>
     <color name="shortcut_background">#F5F5F5</color>
     <integer name="splashScreenFadeOutDuration">300</integer>
-    <string name="appName" translatable="false">54-Day Novena Prayer Tracker</string>
+    <string name="appName" translatable="false">Ora: Rosary &amp; Devotion Tracker</string>
     <string name="assetStatements">
     [{
         \"relation\": [\"delegate_permission/common.handle_all_urls\"],
@@ -27,7 +27,7 @@
     <string name="generatorApp" translatable="false">bubblewrap-cli</string>
     <string name="hostName" translatable="false">54dayrosary.com</string>
     <string name="launchUrl" translatable="false">https://54dayrosary.com/</string>
-    <string name="launcherName" translatable="false">54-DayNovena</string>
+    <string name="launcherName" translatable="false">Ora</string>
     <string name="orientation" translatable="false">portrait</string>
     <string name="providerAuthority" translatable="false">com.woodleysolutions.novenatracker.fileprovider</string>
     <string name="webManifestUrl" translatable="false">https://54dayrosary.com/manifest.json</string>

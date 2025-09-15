@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronRight, ChevronLeft, RotateCcw } from 'lucide-react';
-import { MysteryType, ChapletType, NovenaPhase, PrayerType } from '../../types';
+import { MysteryType, ChapletType, NovenaPhase, PrayerType, MoodType } from '../../types';
 import { getOpeningPrayer, getClosingPrayer, getDecadePrayers } from '../../utils/prayers';
 import { ROSARY_MYSTERIES, MYSTERY_REFLECTIONS } from '../../constants/novena';
 import { CHAPLET_INFO, CHAPLET_PRAYERS } from '../../constants/chaplets';
@@ -10,12 +10,14 @@ import { VirtualRosaryDrawer } from '../prayer/VirtualRosaryDrawer';
 import { RosaryToggleButton } from '../prayer/RosaryToggleButton';
 import { BeadSequence } from '../../constants/rosarySequences';
 import { getBeadIndexForStep, getStepIndexForBead } from '../../utils/rosaryMapping';
-import { 
-  requestWakeLock, 
-  releaseWakeLock, 
-  getKeepScreenAwakePreference 
+import {
+  requestWakeLock,
+  releaseWakeLock,
+  getKeepScreenAwakePreference
 } from '../../utils/screenWakeLock';
 import { audioFeedback, useAudioPreference } from '../../utils/audioFeedback';
+import { PrePrayerIntention } from '../journal/PrePrayerIntention';
+import { PostPrayerReflection } from '../journal/PostPrayerReflection';
 
 interface PrayerModalProps {
   isOpen: boolean;
@@ -26,14 +28,21 @@ interface PrayerModalProps {
   phase?: NovenaPhase; // Optional for daily rosary
   intention?: string;
   onClose: () => void;
-  onComplete: () => void;
+  onComplete: (journalData?: {
+    intention?: string;
+    reflection?: string;
+    mood?: MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }) => void;
 }
 
 interface PrayerStep {
   id: string;
   title: string;
   content: string | string[];
-  type: 'prayer' | 'instruction' | 'mysteries' | 'decades';
+  type: 'prayer' | 'instruction' | 'mysteries' | 'decades' | 'intention' | 'reflection';
 }
 
 export const PrayerModal: React.FC<PrayerModalProps> = ({
@@ -51,6 +60,18 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   const [showRosaryDrawer, setShowRosaryDrawer] = useState(false);
   const [currentBeadIndex, setCurrentBeadIndex] = useState(0);
   const audioEnabled = useAudioPreference();
+
+  // Journal state
+  const [journalData, setJournalData] = useState<{
+    intention?: string;
+    reflection?: string;
+    mood?: MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }>({
+    intention: intention || undefined
+  });
 
   // Generate unique key for this prayer session
   const prayerSessionKey = `prayer_progress_${prayerType}_${chaplet || mystery || 'default'}_${currentDay || 0}`;
@@ -116,6 +137,16 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
 
   const prayerSteps: PrayerStep[] = [];
 
+  // Add intention step at the beginning (except for 54-day novena which has preset intention)
+  if (!isNovena) {
+    prayerSteps.push({
+      id: 'set-intention',
+      title: 'Set Your Intention',
+      content: '',
+      type: 'intention'
+    });
+  }
+
   // Handle chaplet prayers
   if (isChaplet && chaplet) {
     const chapletInfo = CHAPLET_INFO[chaplet];
@@ -143,6 +174,14 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
         content: Array.isArray(step.content) ? step.content : [step.content],
         type: step.type as 'prayer' | 'instruction' | 'mysteries' | 'decades'
       });
+    });
+
+    // Add reflection step for chaplets
+    prayerSteps.push({
+      id: 'prayer-reflection',
+      title: 'Prayer Reflection',
+      content: '',
+      type: 'reflection'
     });
 
     // Add completion step
@@ -279,12 +318,20 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
   }
 
   if (!isChaplet) {
+    // Add reflection step for rosary prayers (including 54-day novena)
+    prayerSteps.push({
+      id: 'prayer-reflection',
+      title: 'Prayer Reflection',
+      content: '',
+      type: 'reflection'
+    });
+
     prayerSteps.push({
       id: 'complete',
       title: 'Prayer Complete',
       content: [
         'Finish with the Sign of the Cross.',
-        'Your daily novena prayer is now complete.',
+        isNovena ? 'Your daily novena prayer is now complete.' : 'Your rosary is now complete.',
         'May God bless your faithful devotion.'
       ],
       type: 'instruction'
@@ -347,12 +394,64 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
     }
   };
 
-  const handleComplete = () => {
+  // Handle intention submission
+  const handleIntentionSubmit = (data: { intention?: string; mood?: MoodType }) => {
+    setJournalData(prev => ({
+      ...prev,
+      intention: data.intention,
+      mood: data.mood
+    }));
+    nextStep(); // Move to next prayer step
+  };
+
+  // Handle intention skip
+  const handleIntentionSkip = () => {
+    nextStep(); // Move to next prayer step without capturing intention
+  };
+
+  // Handle reflection submission
+  const handleReflectionSubmit = (data: {
+    reflection?: string;
+    mood?: MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }) => {
+    const finalJournalData = {
+      ...journalData,
+      ...data
+    };
+    setJournalData(finalJournalData);
+
     // Clear saved progress when prayer is completed
     localStorage.removeItem(prayerSessionKey);
-    
+
     releaseWakeLock();
-    onComplete();
+    onComplete(finalJournalData);
+    onClose();
+    setCurrentStepIndex(0);
+    setCurrentBeadIndex(0);
+  };
+
+  // Handle reflection skip
+  const handleReflectionSkip = () => {
+    // Clear saved progress when prayer is completed
+    localStorage.removeItem(prayerSessionKey);
+
+    releaseWakeLock();
+    onComplete(journalData);
+    onClose();
+    setCurrentStepIndex(0);
+    setCurrentBeadIndex(0);
+  };
+
+  const handleComplete = () => {
+    // This should only be called for the final completion step
+    // Journal data should already be collected by now
+    localStorage.removeItem(prayerSessionKey);
+
+    releaseWakeLock();
+    onComplete(journalData);
     onClose();
     setCurrentStepIndex(0);
     setCurrentBeadIndex(0);
@@ -492,49 +591,66 @@ export const PrayerModal: React.FC<PrayerModalProps> = ({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className={`
-            ${currentStep.type === 'prayer' ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-500 pl-6 py-4 transition-colors duration-300' : ''}
-          `}>
-            {renderContent(currentStep.content, currentStep.type)}
-          </div>
+          {currentStep.type === 'intention' ? (
+            <PrePrayerIntention
+              onSubmit={handleIntentionSubmit}
+              onSkip={handleIntentionSkip}
+              initialIntention={journalData.intention}
+              initialMood={journalData.mood}
+            />
+          ) : currentStep.type === 'reflection' ? (
+            <PostPrayerReflection
+              onSubmit={handleReflectionSubmit}
+              onSkip={handleReflectionSkip}
+              initialData={journalData}
+            />
+          ) : (
+            <div className={`
+              ${currentStep.type === 'prayer' ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-500 pl-6 py-4 transition-colors duration-300' : ''}
+            `}>
+              {renderContent(currentStep.content, currentStep.type)}
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
-        <div className="border-t border-gray-200 dark:border-gray-600 p-6 transition-colors duration-300">
-          <div className="flex justify-between">
-            <button
-              onClick={prevStep}
-              disabled={isFirstStep}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
-                ${isFirstStep 
-                  ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed' 
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                } transition-colors duration-300
-              `}
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Previous
-            </button>
+        {/* Footer - Hide for journal steps as they have their own buttons */}
+        {currentStep.type !== 'intention' && currentStep.type !== 'reflection' && (
+          <div className="border-t border-gray-200 dark:border-gray-600 p-6 transition-colors duration-300">
+            <div className="flex justify-between">
+              <button
+                onClick={prevStep}
+                disabled={isFirstStep}
+                className={`
+                  flex items-center gap-2 px-4 py-2 rounded-lg transition-colors
+                  ${isFirstStep
+                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  } transition-colors duration-300
+                `}
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </button>
 
-            {isLastStep ? (
-              <button
-                onClick={handleComplete}
-                className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors duration-300"
-              >
-                Amen 🙏
-              </button>
-            ) : (
-              <button
-                onClick={nextStep}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-300"
-              >
-                Next
-                <ChevronRight className="w-4 h-4" />
-              </button>
-            )}
+              {isLastStep ? (
+                <button
+                  onClick={handleComplete}
+                  className="bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white px-8 py-2 rounded-lg font-semibold transition-colors duration-300"
+                >
+                  Amen 🙏
+                </button>
+              ) : (
+                <button
+                  onClick={nextStep}
+                  className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors duration-300"
+                >
+                  Next
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       
       {/* Virtual Rosary Drawer - only show for rosary prayers (experimental feature) */}

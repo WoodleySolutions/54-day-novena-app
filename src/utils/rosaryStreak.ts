@@ -43,17 +43,44 @@ export const saveRosaryStreakData = (data: RosaryStreakData): void => {
   }
 };
 
+// Generate UUID for cloud-ready sessions
+const generateUUID = (): string => {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : ((r & 0x3) | 0x8);
+    return v.toString(16);
+  });
+};
+
+// Get device ID (or generate one)
+const getDeviceId = (): string => {
+  let deviceId = localStorage.getItem('deviceId');
+  if (!deviceId) {
+    deviceId = generateUUID();
+    localStorage.setItem('deviceId', deviceId);
+  }
+  return deviceId;
+};
+
 // Create a new rosary session
 export const createRosarySession = (
-  mystery: MysteryType, 
-  prayerType: PrayerType, 
-  intention?: string
+  mystery: MysteryType,
+  prayerType: PrayerType,
+  intention?: string,
+  currentDay?: number
 ): RosarySession => {
+  const now = new Date().toISOString();
   return {
-    id: `rosary-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: generateUUID(),
+    deviceId: getDeviceId(),
+    createdAt: now,
+    updatedAt: now,
+    syncStatus: 'pending',
+    version: 1,
     date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
     prayerType,
     mystery,
+    currentDay,
     completed: false,
     intention
   };
@@ -64,8 +91,14 @@ export const createChapletSession = (
   chaplet: ChapletType,
   intention?: string
 ): RosarySession => {
+  const now = new Date().toISOString();
   return {
-    id: `chaplet-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: generateUUID(),
+    deviceId: getDeviceId(),
+    createdAt: now,
+    updatedAt: now,
+    syncStatus: 'pending',
+    version: 1,
     date: new Date().toISOString().split('T')[0], // YYYY-MM-DD format
     prayerType: 'chaplet',
     chaplet,
@@ -78,26 +111,41 @@ export const createChapletSession = (
 export const completeRosarySession = (
   sessionId: string,
   currentData: RosaryStreakData,
-  duration?: number
+  duration?: number,
+  journalData?: {
+    reflection?: string;
+    mood?: import('../types').MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }
 ): RosaryStreakData => {
   const today = new Date().toISOString().split('T')[0];
-  
+
   // Find and complete the session
-  const updatedSessions = currentData.sessions.map(session => 
-    session.id === sessionId 
-      ? { ...session, completed: true, duration }
+  const updatedSessions = currentData.sessions.map(session =>
+    session.id === sessionId
+      ? {
+          ...session,
+          completed: true,
+          duration,
+          updatedAt: new Date().toISOString(),
+          version: (session.version || 1) + 1,
+          syncStatus: 'pending' as import('../types').SyncStatus,
+          ...journalData
+        }
       : session
   );
 
   // Calculate new streak data
   const newStreakData = { ...currentData, sessions: updatedSessions };
-  
+
   // Only update streak if this is the first prayer today
   const todaysSessions = updatedSessions.filter(s => s.date === today && s.completed);
   if (todaysSessions.length === 1) { // First completed prayer today
     newStreakData.totalPrayers += 1;
     newStreakData.lastPrayerDate = today;
-    
+
     // Calculate streak
     const streak = calculateCurrentStreak(updatedSessions);
     newStreakData.currentStreak = streak;
@@ -180,6 +228,91 @@ export const getPrayerStatistics = (streakData: RosaryStreakData) => {
     averageDuration,
     lastPrayerDate: streakData.lastPrayerDate
   };
+};
+
+// Update a session with journal data
+export const updateSessionJournal = (
+  sessionId: string,
+  currentData: RosaryStreakData,
+  journalUpdate: {
+    intention?: string;
+    reflection?: string;
+    mood?: import('../types').MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }
+): RosaryStreakData => {
+  const updatedSessions = currentData.sessions.map(session =>
+    session.id === sessionId
+      ? {
+          ...session,
+          ...journalUpdate,
+          updatedAt: new Date().toISOString(),
+          version: (session.version || 1) + 1,
+          syncStatus: 'pending' as import('../types').SyncStatus
+        }
+      : session
+  );
+
+  return { ...currentData, sessions: updatedSessions };
+};
+
+// Migrate old sessions to new format
+export const migrateSessionsToCloudFormat = (data: RosaryStreakData): RosaryStreakData => {
+  const now = new Date().toISOString();
+  const deviceId = getDeviceId();
+
+  const migratedSessions = data.sessions.map(session => {
+    // Skip if already migrated
+    if (session.createdAt && session.updatedAt) return session;
+
+    return {
+      ...session,
+      id: session.id.includes('-') ? session.id : generateUUID(), // Ensure UUID format
+      deviceId,
+      createdAt: session.date ? `${session.date}T12:00:00.000Z` : now,
+      updatedAt: now,
+      syncStatus: 'pending' as import('../types').SyncStatus,
+      version: 1
+    };
+  });
+
+  return { ...data, sessions: migratedSessions };
+};
+
+// Get recent prayer sessions (last 30 days)
+export const getRecentSessions = (
+  streakData: RosaryStreakData,
+  days: number = 30
+): RosarySession[] => {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+  const cutoffString = cutoffDate.toISOString().split('T')[0];
+
+  return streakData.sessions
+    .filter(session => session.date >= cutoffString)
+    .sort((a, b) => b.date.localeCompare(a.date));
+};
+
+// Search sessions by content
+export const searchSessions = (
+  streakData: RosaryStreakData,
+  query: string
+): RosarySession[] => {
+  const lowercaseQuery = query.toLowerCase();
+
+  return streakData.sessions.filter(session => {
+    const searchableText = [
+      session.intention,
+      session.reflection,
+      session.insights,
+      ...(session.gratitudes || []),
+      ...(session.tags || [])
+    ].join(' ').toLowerCase();
+
+    return searchableText.includes(lowercaseQuery);
+  }).sort((a, b) => b.date.localeCompare(a.date));
 };
 
 // Clear all rosary streak data

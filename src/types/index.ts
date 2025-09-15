@@ -35,7 +35,11 @@ export interface StorageState {
 // New types for expanded prayer system
 export type PrayerType = '54-day-novena' | 'daily-rosary' | 'chaplet';
 
-export type AppScreen = 'selection' | 'novena' | 'rosary-modal';
+export type AppScreen = 'selection' | 'novena' | 'rosary-modal' | 'history';
+
+export type MoodType = 'peaceful' | 'joyful' | 'sorrowful' | 'hopeful' | 'troubled';
+
+export type SyncStatus = 'synced' | 'pending' | 'conflict';
 
 export interface ChapletInfo {
   name: string;
@@ -57,13 +61,28 @@ export interface ChapletStep {
 
 export interface RosarySession {
   id: string;
+  userId?: string; // Future: link to user account
+  deviceId?: string; // Track originating device
+  createdAt: string; // ISO timestamp for proper sync ordering
+  updatedAt: string; // Track modifications for conflict resolution
+  syncStatus?: SyncStatus; // Sync state
+  version?: number; // For optimistic concurrency control
+
   date: string;
   prayerType: PrayerType;
   mystery?: MysteryType; // Optional for chaplets
   chaplet?: ChapletType; // New for chaplet prayers
+  currentDay?: number; // For novena tracking
   completed: boolean;
   duration?: number;
-  intention?: string;
+
+  // Journaling fields
+  intention?: string; // Pre-prayer intention
+  reflection?: string; // Post-prayer reflection
+  mood?: MoodType; // User's mood before/after prayer
+  gratitudes?: string[]; // Things grateful for
+  insights?: string; // Spiritual insights gained
+  tags?: string[]; // Custom user tags
 }
 
 export interface RosaryStreakData {

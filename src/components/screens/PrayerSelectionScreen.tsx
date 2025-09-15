@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info, Settings } from 'lucide-react';
+import { Calendar, Heart, BookOpen, Clock, Trophy, Flame, Sparkles, Info, Settings, History, MessageCircle, Tag } from 'lucide-react';
 import { RosaryStreakData, NovenaState } from '../../types';
 import { calculateCompletionPercentage } from '../../utils/novenaCalculations';
 import { TOTAL_DAYS } from '../../constants/novena';
@@ -20,6 +20,7 @@ interface PrayerSelectionScreenProps {
   onShowRosaryInfo?: () => void;
   onShowChapletInfo?: () => void;
   onShowSettings?: () => void;
+  onShowHistory?: () => void;
 }
 
 export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
@@ -34,7 +35,8 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   onShowNovenaInfo,
   onShowRosaryInfo,
   onShowChapletInfo,
-  onShowSettings
+  onShowSettings,
+  onShowHistory
 }) => {
   const { currentDay, completedDays, startDate } = novenaState;
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
@@ -69,6 +71,31 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   };
 
   const streakStatus = getStreakStatus();
+
+  // Calculate history statistics
+  const getHistoryStats = () => {
+    const completedSessions = rosaryStreak.sessions.filter(s => s.completed);
+    const recentSessions = completedSessions
+      .filter(s => {
+        const sessionDate = new Date(s.date);
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return sessionDate >= thirtyDaysAgo;
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    const withReflections = completedSessions.filter(s => s.reflection || s.insights || (s.gratitudes && s.gratitudes.length > 0)).length;
+    const reflectionPercentage = completedSessions.length > 0 ? Math.round((withReflections / completedSessions.length) * 100) : 0;
+
+    return {
+      totalCompleted: completedSessions.length,
+      recent30Days: recentSessions.length,
+      reflectionPercentage,
+      recentSessions: recentSessions.slice(0, 3) // Show last 3 sessions
+    };
+  };
+
+  const historyStats = getHistoryStats();
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6">
@@ -307,6 +334,108 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Prayer History Card */}
+      {historyStats.totalCompleted > 0 && onShowHistory && (
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+          <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <History className="w-6 h-6 text-white" />
+                <h2 className="text-xl font-semibold text-white">Prayer History & Journal</h2>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                  {historyStats.totalCompleted}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  completed prayers
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-cyan-600 dark:text-cyan-400">
+                  {historyStats.recent30Days}
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  last 30 days
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  {historyStats.reflectionPercentage}%
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">
+                  with reflections
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Sessions Preview */}
+            {historyStats.recentSessions.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Recent Prayers
+                </h3>
+                <div className="space-y-2">
+                  {historyStats.recentSessions.map((session) => (
+                    <div
+                      key={session.id}
+                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-300"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-800 dark:text-white">
+                            {session.prayerType === '54-day-novena' ? `54-Day Novena - Day ${session.currentDay}` :
+                             session.prayerType === 'daily-rosary' ? `${session.mystery} Rosary` :
+                             'Chaplet'}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                            {new Date(session.date).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        {session.intention && (
+                          <div className="flex items-center gap-1">
+                            <Heart className="w-3 h-3 text-red-400" />
+                            <span>Intention</span>
+                          </div>
+                        )}
+                        {session.reflection && (
+                          <div className="flex items-center gap-1">
+                            <MessageCircle className="w-3 h-3 text-blue-400" />
+                            <span>Reflection</span>
+                          </div>
+                        )}
+                        {session.tags && session.tags.length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <Tag className="w-3 h-3 text-purple-400" />
+                            <span>{session.tags.length}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={onShowHistory}
+              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              <History className="w-5 h-5" />
+              View Full Prayer History
+            </button>
+          </div>
+        </div>
+      )}
 
       <AppFooter />
     </div>

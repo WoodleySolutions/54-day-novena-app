@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { AppScreen, MysteryType, ChapletType, RosarySession } from './types';
+import { AppScreen, MysteryType, ChapletType, RosarySession, MoodType } from './types';
 import { useSubscription } from './contexts/SubscriptionContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 
 // Screens and Modals
 import { PrayerSelectionScreen } from './components/screens/PrayerSelectionScreen';
+import { PrayerHistoryScreen } from './components/screens/PrayerHistoryScreen';
 import NovenaTrackingScreen from './components/screens/NovenaTrackingScreen';
 import { RosarySelectionModal } from './components/modals/RosarySelectionModal';
 import { ChapletSelectionModal } from './components/modals/ChapletSelectionModal';
@@ -137,11 +138,20 @@ const App: React.FC = () => {
   };
 
   // Prayer completion handlers
-  const handleRosaryPrayerComplete = () => {
+  const handleRosaryPrayerComplete = (journalData?: {
+    intention?: string;
+    reflection?: string;
+    mood?: MoodType;
+    gratitudes?: string[];
+    insights?: string;
+    tags?: string[];
+  }) => {
     if (currentPrayerSession) {
       const updatedStreakData = completeRosarySession(
         currentPrayerSession.id,
-        rosaryStreakData
+        rosaryStreakData,
+        undefined, // duration - could be calculated
+        journalData
       );
       setRosaryStreakData(updatedStreakData);
       // Only track mystery for rosary prayers, not chaplets
@@ -149,7 +159,7 @@ const App: React.FC = () => {
         analytics.prayerCompleted(1, currentPrayerSession.mystery);
       }
     }
-    
+
     setShowPrayerModal(false);
     setCurrentPrayerSession(null);
   };
@@ -197,6 +207,10 @@ const App: React.FC = () => {
     setShowSettings(true);
   };
 
+  const handleShowHistory = () => {
+    setCurrentScreen('history');
+  };
+
   const handleClearData = () => {
     // This would typically clear rosary streak data and novena data
     // For now, just console.log as a placeholder  
@@ -223,6 +237,7 @@ const App: React.FC = () => {
             onShowRosaryInfo={handleShowRosaryInfo}
             onShowChapletInfo={handleShowChapletInfo}
             onShowSettings={handleShowSettings}
+            onShowHistory={handleShowHistory}
           />
         )}
 
@@ -230,6 +245,12 @@ const App: React.FC = () => {
           <NovenaTrackingScreen
             onBackToSelection={handleBackToSelection}
             onUpgradeClick={handleUpgradeClick}
+          />
+        )}
+
+        {currentScreen === 'history' && (
+          <PrayerHistoryScreen
+            onBack={handleBackToSelection}
           />
         )}
 
