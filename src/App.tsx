@@ -16,6 +16,7 @@ import { PaywallModal } from './components/modals/PaywallModal';
 import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
 import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
 import { SettingsModal } from './components/modals/SettingsModal';
+import { EmailCollectionModal } from './components/modals/EmailCollectionModal';
 import { LiturgicalDebugPanel } from './components/debug/LiturgicalDebugPanel';
 
 // Utilities
@@ -37,6 +38,7 @@ import {
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
+import { subscriptionService, UserRegistrationData, SubscriptionStatus } from './services/subscriptionService';
 import { FIFTY_FOUR_DAY_NOVENA_INFO, NOVENA_INFO, ROSARY_INFO, CHAPLET_INFO } from './constants/prayerInfo';
 import './utils/devHelpers'; // Load development utilities
 
@@ -58,6 +60,7 @@ const App: React.FC = () => {
   const [showChapletInfo, setShowChapletInfo] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [showEmailCollection, setShowEmailCollection] = useState(false);
 
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
@@ -66,21 +69,50 @@ const App: React.FC = () => {
   // Prayer data
   const [rosaryStreakData, setRosaryStreakData] = useState(() => loadRosaryStreakData());
   const [activeNovenas, setActiveNovenas] = useState<ActiveNovena[]>(() => loadActiveNovenas());
+  const [serverSubscriptionStatus, setServerSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   
   // Subscription and Novena state
-  const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen } = useSubscription();
+  const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen, activatePremium, deactivatePremium } = useSubscription();
   const novenaState = useNovenaState();
 
   // Initialize app
   useEffect(() => {
     initGA();
     initializeNotifications();
-    
+
     // Show welcome modal if first time user
     if (!hasSeenWelcome) {
       setShowWelcome(true);
     }
   }, [hasSeenWelcome]);
+
+  // Check email and subscription status on app startup
+  useEffect(() => {
+    const checkEmailAndSubscription = async () => {
+      if (!subscriptionService.hasUserEmail()) {
+        // Show email collection after a brief delay (after welcome modal if shown)
+        const delay = !hasSeenWelcome ? 3000 : 2000;
+        setTimeout(() => setShowEmailCollection(true), delay);
+      } else {
+        // Check subscription status with server
+        try {
+          const status = await subscriptionService.checkSubscriptionStatus();
+          setServerSubscriptionStatus(status);
+
+          // Update local subscription state based on server response
+          if (status.hasAccess && !hasAccess) {
+            activatePremium();
+          } else if (!status.hasAccess && hasAccess) {
+            deactivatePremium();
+          }
+        } catch (error) {
+          console.error('Failed to check subscription status:', error);
+        }
+      }
+    };
+
+    checkEmailAndSubscription();
+  }, [hasAccess, hasSeenWelcome, activatePremium, deactivatePremium]);
 
   // Save rosary streak data whenever it changes
   useEffect(() => {
@@ -326,6 +358,26 @@ const App: React.FC = () => {
     setShowDebugPanel(true);
   };
 
+  // Handle email collection submission
+  const handleEmailSubmit = async (data: UserRegistrationData) => {
+    try {
+      await subscriptionService.registerUser(data);
+
+      // Check subscription status after registration
+      const status = await subscriptionService.checkSubscriptionStatus();
+      setServerSubscriptionStatus(status);
+
+      if (status.hasAccess) {
+        activatePremium();
+      }
+
+      console.log('Email registered successfully:', data.email);
+    } catch (error) {
+      console.error('Email registration failed:', error);
+      // Don't block the user if email registration fails
+    }
+  };
+
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
@@ -469,6 +521,12 @@ const App: React.FC = () => {
           onClose={() => setShowDebugPanel(false)}
           onStartNovena={handleStartRecommendedNovena}
           onStart54DayNovena={handleStart54DayFromRecommendation}
+        />
+
+        <EmailCollectionModal
+          isOpen={showEmailCollection}
+          onClose={() => setShowEmailCollection(false)}
+          onSubmit={handleEmailSubmit}
         />
 
       </div>
