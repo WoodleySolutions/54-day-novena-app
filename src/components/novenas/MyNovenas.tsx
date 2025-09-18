@@ -80,6 +80,13 @@ export const MyNovenas: React.FC<MyNovenasProps> = ({
         <div className="space-y-3">
           {activeNovenas.map((novena) => {
             const info = NOVENA_INFO[novena.type];
+
+            // Safety check - if novena info doesn't exist, skip this novena
+            if (!info) {
+              console.warn(`Novena info not found for type: ${novena.type}`);
+              return null;
+            }
+
             const nextDay = calculateNextDay(novena);
             const progressPercent = getProgressPercentage(novena);
             const canContinue = canContinueToday(novena);

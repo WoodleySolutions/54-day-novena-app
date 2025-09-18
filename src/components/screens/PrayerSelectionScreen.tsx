@@ -7,6 +7,7 @@ import { CHAPLET_INFO } from '../../constants/chaplets';
 import { TrialBanner } from '../common/TrialBanner';
 import { AppFooter } from '../common/AppFooter';
 import { MyNovenas } from '../novenas/MyNovenas';
+import { RecommendationsSection } from '../recommendations/RecommendationsSection';
 
 interface PrayerSelectionScreenProps {
   novenaState: NovenaState;
@@ -27,6 +28,8 @@ interface PrayerSelectionScreenProps {
   onShowChapletInfo?: () => void;
   onShowSettings?: () => void;
   onShowHistory?: () => void;
+  onStartRecommendedNovena?: (novenaType: string, targetDate: string) => void;
+  onStart54DayFromRecommendation?: (targetDate: string) => void;
 }
 
 export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
@@ -47,7 +50,9 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   onShowRosaryInfo,
   onShowChapletInfo,
   onShowSettings,
-  onShowHistory
+  onShowHistory,
+  onStartRecommendedNovena,
+  onStart54DayFromRecommendation
 }) => {
   const { currentDay, completedDays, startDate } = novenaState;
   const completionPercentage = calculateCompletionPercentage(completedDays, TOTAL_DAYS);
@@ -319,6 +324,16 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           />
         </div>
       </div>
+
+      {/* Liturgical Recommendations */}
+      {(onStartRecommendedNovena && onStart54DayFromRecommendation) && (
+        <RecommendationsSection
+          activeNovenas={activeNovenas.map(n => n.type)}
+          has54DayActive={!!novenaState.startDate}
+          onStartNovena={onStartRecommendedNovena}
+          onStart54DayNovena={onStart54DayFromRecommendation}
+        />
+      )}
 
       {/* Traditional Chaplets Card */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">

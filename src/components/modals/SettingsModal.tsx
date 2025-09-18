@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff, Sun, Moon, Laptop, Crown } from 'lucide-react';
+import { X, Bell, BellOff, Trash2, AlertTriangle, Heart, Monitor, MonitorOff, Sun, Moon, Laptop, Crown, Bug } from 'lucide-react';
 import { PremiumGuard } from '../common/PremiumGuard';
 import { 
   getNotificationPermission, 
@@ -24,13 +24,15 @@ interface SettingsModalProps {
   onClose: () => void;
   onClearData: () => void;
   onUpgradeClick?: () => void;
+  onShowDebugPanel?: () => void;
 }
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({
   isOpen,
   onClose,
   onClearData,
-  onUpgradeClick
+  onUpgradeClick,
+  onShowDebugPanel
 }) => {
   const [permission, setPermission] = useState(getNotificationPermission());
   const [reminderTime, setReminderTime] = useState(getReminderTimePreference());
@@ -418,17 +420,32 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                   </div>
                   
-                  <button
-                    onClick={() => {
-                      if (window.confirm('This will clear all app data and reload the page. Continue?')) {
-                        const { clearAllAppData } = require('../../utils/devHelpers');
-                        clearAllAppData();
-                      }
-                    }}
-                    className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors mt-3"
-                  >
-                    Clear ALL + Reload
-                  </button>
+                  <div className="flex gap-3 mt-3">
+                    <button
+                      onClick={() => {
+                        if (window.confirm('This will clear all app data and reload the page. Continue?')) {
+                          const { clearAllAppData } = require('../../utils/devHelpers');
+                          clearAllAppData();
+                        }
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      Clear ALL + Reload
+                    </button>
+
+                    {onShowDebugPanel && (
+                      <button
+                        onClick={() => {
+                          onShowDebugPanel();
+                          onClose();
+                        }}
+                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                      >
+                        <Bug className="w-4 h-4" />
+                        Liturgical Debug
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

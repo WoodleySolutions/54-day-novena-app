@@ -299,6 +299,23 @@ export const cleanupCompletedNovenas = (olderThanDays: number = 30): void => {
   }
 };
 
+// Update novena intention (useful for setting intention before completing day 1)
+export const updateNovenaIntention = (novenaId: string, intention: string): boolean => {
+  try {
+    const activeNovenas = loadActiveNovenas();
+    const novenaIndex = activeNovenas.findIndex(n => n.id === novenaId);
+
+    if (novenaIndex === -1) return false;
+
+    activeNovenas[novenaIndex].intention = intention;
+    saveActiveNovenas(activeNovenas);
+    return true;
+  } catch (error) {
+    console.error('Failed to update novena intention:', error);
+    return false;
+  }
+};
+
 // Convert novena sessions to rosary session format (for history integration)
 export const convertNovenaSessionsToHistory = (novenaSessions: NovenaSession[]) => {
   return novenaSessions.map(session => ({

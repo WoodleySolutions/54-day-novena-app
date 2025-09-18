@@ -16,6 +16,7 @@ import { PaywallModal } from './components/modals/PaywallModal';
 import { TrialWelcomeModal } from './components/modals/TrialWelcomeModal';
 import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
 import { SettingsModal } from './components/modals/SettingsModal';
+import { LiturgicalDebugPanel } from './components/debug/LiturgicalDebugPanel';
 
 // Utilities
 import {
@@ -30,7 +31,8 @@ import {
   startNovena,
   completeNovenaDay,
   getNovenaById,
-  removeNovena
+  removeNovena,
+  updateNovenaIntention
 } from './utils/novenaTracking';
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
@@ -55,6 +57,7 @@ const App: React.FC = () => {
   const [showRosaryInfo, setShowRosaryInfo] = useState(false);
   const [showChapletInfo, setShowChapletInfo] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
@@ -289,11 +292,38 @@ const App: React.FC = () => {
     setCurrentScreen('history');
   };
 
+  const handleStartRecommendedNovena = (novenaType: string, targetDate: string) => {
+    // Create novena with specific target date context
+    const newNovena = startNovena(novenaType as any); // Type assertion needed for now
+    setActiveNovenas(prev => [...prev, newNovena]);
+
+    setCurrentNovena({
+      novenaId: newNovena.id,
+      novenaType: newNovena.type,
+      day: 1
+    });
+
+    setShowNovenaModal(true);
+    console.log(`Started recommended novena: ${novenaType} for feast on ${targetDate}`);
+  };
+
+  const handleStart54DayFromRecommendation = (targetDate: string) => {
+    // Start 54-day novena with target date
+    novenaState.startNovena();
+    setCurrentScreen('novena');
+    analytics.novenaStarted();
+    console.log(`Started 54-day novena for feast on ${targetDate}`);
+  };
+
   const handleClearData = () => {
     // This would typically clear rosary streak data and novena data
-    // For now, just console.log as a placeholder  
+    // For now, just console.log as a placeholder
     console.log('Clear data requested');
     setShowSettings(false);
+  };
+
+  const handleShowDebugPanel = () => {
+    setShowDebugPanel(true);
   };
 
   return (
@@ -321,6 +351,8 @@ const App: React.FC = () => {
             onShowChapletInfo={handleShowChapletInfo}
             onShowSettings={handleShowSettings}
             onShowHistory={handleShowHistory}
+            onStartRecommendedNovena={handleStartRecommendedNovena}
+            onStart54DayFromRecommendation={handleStart54DayFromRecommendation}
           />
         )}
 
@@ -368,6 +400,12 @@ const App: React.FC = () => {
               setCurrentNovena(null);
             }}
             onComplete={handleNovenaComplete}
+            onIntentionUpdate={(intention: string) => {
+              updateNovenaIntention(currentNovena.novenaId, intention);
+              setActiveNovenas(prev =>
+                prev.map(n => n.id === currentNovena.novenaId ? { ...n, intention } : n)
+              );
+            }}
           />
         )}
 
@@ -423,6 +461,14 @@ const App: React.FC = () => {
           onClose={() => setShowSettings(false)}
           onClearData={handleClearData}
           onUpgradeClick={handleUpgradeClick}
+          onShowDebugPanel={handleShowDebugPanel}
+        />
+
+        <LiturgicalDebugPanel
+          isOpen={showDebugPanel}
+          onClose={() => setShowDebugPanel(false)}
+          onStartNovena={handleStartRecommendedNovena}
+          onStart54DayNovena={handleStart54DayFromRecommendation}
         />
 
       </div>

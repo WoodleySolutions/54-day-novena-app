@@ -4,7 +4,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'divine-mercy': {
     name: 'Divine Mercy Novena',
     description: 'Nine days of prayer to Jesus\' Divine Mercy',
-    color: 'red',
+    color: '#dc2626', // red-600 - good contrast
     icon: '✝️',
     patron: 'Jesus Christ',
     feastDay: 'Divine Mercy Sunday',
@@ -13,7 +13,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'sacred-heart': {
     name: 'Sacred Heart Novena',
     description: 'Nine days of devotion to the Sacred Heart of Jesus',
-    color: 'gold',
+    color: '#d97706', // amber-600 - better than gold
     icon: '❤️',
     patron: 'Jesus Christ',
     feastDay: 'Sacred Heart Friday',
@@ -22,7 +22,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'st-joseph': {
     name: 'St. Joseph Novena',
     description: 'Nine days of prayer to the patron of workers and families',
-    color: 'brown',
+    color: '#92400e', // amber-800 - dark brown for contrast
     icon: '🔨',
     patron: 'St. Joseph',
     feastDay: 'March 19',
@@ -31,7 +31,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'immaculate-heart': {
     name: 'Immaculate Heart Novena',
     description: 'Nine days of prayer to Mary\'s Immaculate Heart',
-    color: 'blue',
+    color: '#2563eb', // blue-600 - good contrast
     icon: '💝',
     patron: 'Blessed Virgin Mary',
     feastDay: 'August 22',
@@ -40,7 +40,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'st-therese': {
     name: 'St. Thérèse Novena',
     description: 'Nine days of prayer to the Little Flower',
-    color: 'pink',
+    color: '#db2777', // pink-600 - better than light pink
     icon: '🌹',
     patron: 'St. Thérèse of Lisieux',
     feastDay: 'October 1',
@@ -49,7 +49,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'st-jude': {
     name: 'St. Jude Novena',
     description: 'Nine days of prayer to the patron of hopeless causes',
-    color: 'green',
+    color: '#16a34a', // green-600 - good contrast
     icon: '🕯️',
     patron: 'St. Jude Thaddeus',
     feastDay: 'October 28',
@@ -58,7 +58,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'st-anthony': {
     name: 'St. Anthony Novena',
     description: 'Nine days of prayer to the finder of lost things',
-    color: 'brown',
+    color: '#a16207', // yellow-700 - different from st-joseph
     icon: '📿',
     patron: 'St. Anthony of Padua',
     feastDay: 'June 13',
@@ -67,7 +67,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'blessed-mother': {
     name: 'Blessed Mother Novena',
     description: 'Nine days of prayer to Our Lady',
-    color: 'blue',
+    color: '#1d4ed8', // blue-700 - darker than immaculate-heart
     icon: '👑',
     patron: 'Blessed Virgin Mary',
     feastDay: 'Various',
@@ -76,7 +76,7 @@ export const NOVENA_INFO: Record<NovenaType, NovenaInfo> = {
   'holy-spirit': {
     name: 'Holy Spirit Novena',
     description: 'Nine days of prayer for the gifts of the Holy Spirit',
-    color: 'red',
+    color: '#b91c1c', // red-700 - darker than divine-mercy
     icon: '🕊️',
     patron: 'Holy Spirit',
     feastDay: 'Pentecost',

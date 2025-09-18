@@ -27,6 +27,7 @@ interface NovenaModalProps {
     insights?: string;
     tags?: string[];
   }) => void;
+  onIntentionUpdate?: (intention: string) => void;
 }
 
 interface NovenaStep {
@@ -43,7 +44,8 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
   currentDay,
   existingIntention,
   onClose,
-  onComplete
+  onComplete,
+  onIntentionUpdate
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showIntention, setShowIntention] = useState(false);
@@ -79,15 +81,8 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
   const createSteps = (): NovenaStep[] => {
     const steps: NovenaStep[] = [];
 
-    // Intention step - only on day 1 if no intention exists yet
-    if (currentDay === 1 && !existingIntention && !intention) {
-      steps.push({
-        id: 'intention',
-        title: 'Set Your Intention',
-        content: [`Day ${currentDay} of 9`, novenaDay.title],
-        type: 'intention'
-      });
-    }
+    // Note: Intention step is now handled via separate modal, not as a step
+    // This prevents the loop issue where steps array keeps changing
 
     // Opening prayer
     steps.push({
@@ -221,6 +216,12 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
   const handleIntentionComplete = (intentionData: { intention: string }) => {
     setIntention(intentionData.intention);
     setShowIntention(false);
+
+    // Update the novena object immediately with the intention
+    if (onIntentionUpdate) {
+      onIntentionUpdate(intentionData.intention);
+    }
+
     // After setting intention, the steps array will be recreated without the intention step
     // So we start from step 0 (which will now be the opening prayer)
     setCurrentStep(0);
@@ -242,7 +243,8 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
     handleComplete();
   };
 
-  const currentStepData = steps[currentStep];
+  const prayerSteps = createSteps();
+  const currentStepData = prayerSteps[currentStep];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -333,13 +335,7 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
                   {currentStepData.title}
                 </h3>
 
-                {currentStepData.type === 'intention' ? (
-                  <div className="text-center py-4">
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                      Set your heart's intention for this novena day.
-                    </p>
-                  </div>
-                ) : currentStepData.type === 'reflection' ? (
+                {currentStepData.type === 'reflection' ? (
                   <div className="text-center py-4">
                     <p className="text-gray-600 dark:text-gray-300 mb-4">
                       Reflect on how this prayer touched your heart.
@@ -368,9 +364,7 @@ export const NovenaModal: React.FC<NovenaModalProps> = ({
 
                   <button
                     onClick={() => {
-                      if (currentStepData.type === 'intention') {
-                        setShowIntention(true);
-                      } else if (currentStepData.type === 'reflection') {
+                      if (currentStepData.type === 'reflection') {
                         setShowReflection(true);
                       } else {
                         handleNext();
