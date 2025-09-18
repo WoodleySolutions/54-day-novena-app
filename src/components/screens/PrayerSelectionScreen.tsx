@@ -114,7 +114,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
   const historyStats = getHistoryStats();
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div className="relative text-center mb-8">
         {/* Settings Button */}
@@ -128,18 +128,18 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </button>
         )}
         
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">
           🌹 Ora
         </h1>
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
-        <p className="text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
+        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
       </div>
 
       {/* Trial Status Banner */}
       <TrialBanner onUpgradeClick={onUpgradeClick} />
 
       {/* 54-Day Novena Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300">
         <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </div>
         </div>
         
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {isNovenaActive ? (
             <>
               <div className="flex justify-between items-center mb-4">
@@ -203,7 +203,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
               ) : (
                 <button
                   onClick={hasAccess ? onContinueNovena : onUpgradeClick}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]"
                 >
                   <Heart className="w-5 h-5" />
                   Continue Novena - Day {currentDay}
@@ -219,7 +219,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
               </p>
               <button
                 onClick={hasAccess ? onStartNovena : onUpgradeClick}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 mx-auto"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 mx-auto min-h-[48px]"
               >
                 <Calendar className="w-5 h-5" />
                 Start 54-Day Novena
@@ -231,7 +231,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       </div>
 
       {/* Daily Rosary Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300">
         <div className="bg-gradient-to-r from-rose-500 to-pink-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -250,7 +250,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </div>
         </div>
         
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
@@ -289,7 +289,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
 
           <button
             onClick={onPrayRosary}
-            className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-700 hover:to-pink-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]"
           >
             <BookOpen className="w-5 h-5" />
             Pray Today's Rosary
@@ -298,7 +298,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       </div>
 
       {/* Novenas Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300">
         <div className="bg-gradient-to-r from-blue-500 to-indigo-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -315,7 +315,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <MyNovenas
             activeNovenas={activeNovenas}
             onContinueNovena={onContinueIndividualNovena}
@@ -336,7 +336,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
       )}
 
       {/* Traditional Chaplets Card */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300">
         <div className="bg-gradient-to-r from-purple-500 to-violet-600 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -355,8 +355,8 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </div>
         </div>
         
-        <div className="p-6">
-          <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="p-4 sm:p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
             {Object.entries(CHAPLET_INFO).slice(0, 4).map(([key, chaplet]) => (
               <div
                 key={key}
@@ -381,7 +381,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
 
           <button
             onClick={onPrayChaplet}
-            className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]"
           >
             <Sparkles className="w-5 h-5" />
             Pray a Chaplet
@@ -391,7 +391,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
 
       {/* Prayer History Card */}
       {historyStats.totalCompleted > 0 && onShowHistory && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl hover:shadow-2xl overflow-hidden transition-all duration-300">
           <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -401,8 +401,8 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
             </div>
           </div>
 
-          <div className="p-6">
-            <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
               <div className="text-center">
                 <div className="text-2xl font-bold text-teal-600 dark:text-teal-400">
                   {historyStats.totalCompleted}
@@ -482,7 +482,7 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
 
             <button
               onClick={onShowHistory}
-              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white py-3 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white py-3 sm:py-4 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-2 min-h-[48px]"
             >
               <History className="w-5 h-5" />
               View Full Prayer History

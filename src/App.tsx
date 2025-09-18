@@ -18,6 +18,8 @@ import { PrayerInfoModal } from './components/modals/PrayerInfoModal';
 import { SettingsModal } from './components/modals/SettingsModal';
 import { EmailCollectionModal } from './components/modals/EmailCollectionModal';
 import { LiturgicalDebugPanel } from './components/debug/LiturgicalDebugPanel';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
+import { Toast, useToast } from './components/common/Toast';
 
 // Utilities
 import {
@@ -61,6 +63,7 @@ const App: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   const [showEmailCollection, setShowEmailCollection] = useState(false);
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(false);
 
   // Current prayer context
   const [currentPrayerSession, setCurrentPrayerSession] = useState<RosarySession | null>(null);
@@ -74,6 +77,7 @@ const App: React.FC = () => {
   // Subscription and Novena state
   const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen, activatePremium, deactivatePremium } = useSubscription();
   const novenaState = useNovenaState();
+  const { toasts, showSuccess, showError, hideToast } = useToast();
 
   // Initialize app
   useEffect(() => {
@@ -95,6 +99,7 @@ const App: React.FC = () => {
         setTimeout(() => setShowEmailCollection(true), delay);
       } else {
         // Check subscription status with server
+        setIsLoadingSubscription(true);
         try {
           const status = await subscriptionService.checkSubscriptionStatus();
 
@@ -106,12 +111,15 @@ const App: React.FC = () => {
           }
         } catch (error) {
           console.error('Failed to check subscription status:', error);
+          showError('Failed to check subscription status. Please check your connection.');
+        } finally {
+          setIsLoadingSubscription(false);
         }
       }
     };
 
     checkEmailAndSubscription();
-  }, [hasAccess, hasSeenWelcome, activatePremium, deactivatePremium]);
+  }, [hasAccess, hasSeenWelcome, activatePremium, deactivatePremium, showError]);
 
   // Save rosary streak data whenever it changes
   useEffect(() => {
@@ -370,9 +378,10 @@ const App: React.FC = () => {
       }
 
       console.log('Email registered successfully:', data.email);
+      showSuccess('Welcome! Your email has been registered successfully.');
     } catch (error) {
       console.error('Email registration failed:', error);
-      // Don't block the user if email registration fails
+      showError('Email registration failed. You can still use the app normally.');
     }
   };
 
@@ -526,6 +535,26 @@ const App: React.FC = () => {
           onClose={() => setShowEmailCollection(false)}
           onSubmit={handleEmailSubmit}
         />
+
+        {/* Loading Overlay */}
+        {isLoadingSubscription && (
+          <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
+              <LoadingSpinner size="lg" message="Checking subscription status..." />
+            </div>
+          </div>
+        )}
+
+        {/* Toast Notifications */}
+        {toasts.map((toast) => (
+          <Toast
+            key={toast.id}
+            message={toast.message}
+            type={toast.type}
+            isVisible={true}
+            onClose={() => hideToast(toast.id)}
+          />
+        ))}
 
       </div>
     </ThemeProvider>

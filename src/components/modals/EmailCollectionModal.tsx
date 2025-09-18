@@ -46,7 +46,7 @@ export const EmailCollectionModal: React.FC<EmailCollectionModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full relative">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 sm:p-6 max-w-md w-full relative max-h-[90vh] overflow-y-auto">
 
         {/* Close button */}
         <button

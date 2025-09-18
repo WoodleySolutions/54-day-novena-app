@@ -1,4 +1,5 @@
-# Ora: Rosary & Devotion Tracker v0.3.0 Release Notes
+# 
+ v0.3.0 Release Notes
 
 ## 🎉 Major New Feature: Virtual Rosary
 
