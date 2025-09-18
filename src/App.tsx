@@ -38,7 +38,7 @@ import {
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
-import { subscriptionService, UserRegistrationData, SubscriptionStatus } from './services/subscriptionService';
+import { subscriptionService, UserRegistrationData } from './services/subscriptionService';
 import { FIFTY_FOUR_DAY_NOVENA_INFO, NOVENA_INFO, ROSARY_INFO, CHAPLET_INFO } from './constants/prayerInfo';
 import './utils/devHelpers'; // Load development utilities
 
