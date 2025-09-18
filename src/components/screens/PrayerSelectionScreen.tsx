@@ -128,9 +128,24 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </button>
         )}
         
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">
-          Ora
-        </h1>
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <img
+            src="/Ora.svg"
+            alt="Ora Logo"
+            className="w-10 h-10 sm:w-12 sm:h-12"
+            onError={(e) => {
+              // Fallback to text if logo fails to load
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling!.style.display = 'block';
+            }}
+          />
+          <h1
+            className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white"
+            style={{ display: 'none' }}
+          >
+            Ora
+          </h1>
+        </div>
         <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
       </div>
