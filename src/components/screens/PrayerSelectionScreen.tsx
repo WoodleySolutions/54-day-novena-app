@@ -128,25 +128,21 @@ export const PrayerSelectionScreen: React.FC<PrayerSelectionScreenProps> = ({
           </button>
         )}
         
-        <div className="flex items-center justify-center gap-3 mb-2">
+        <div className="flex items-center justify-center gap-3 mb-3">
           <img
             src="/Ora.svg"
             alt="Ora Logo"
             className="w-10 h-10 sm:w-12 sm:h-12"
             onError={(e) => {
-              // Fallback to text if logo fails to load
+              // If logo fails to load, just hide it - text will still show
               e.currentTarget.style.display = 'none';
-              e.currentTarget.nextElementSibling!.style.display = 'block';
             }}
           />
-          <h1
-            className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white"
-            style={{ display: 'none' }}
-          >
+          <h1 className="text-2xl sm:text-3xl font-light tracking-wide text-gray-800 dark:text-white">
             Ora
           </h1>
         </div>
-        <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
+        <p className="text-base sm:text-lg font-light tracking-wide text-gray-600 dark:text-gray-400 mb-2">Rosary & Devotion Tracker</p>
         <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">{getTodaysDate()}</p>
       </div>
 
