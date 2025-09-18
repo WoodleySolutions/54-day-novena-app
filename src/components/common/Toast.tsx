@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CheckCircle, AlertCircle, X, Info } from 'lucide-react';
 
 export type ToastType = 'success' | 'error' | 'info';
@@ -77,21 +77,25 @@ export const useToast = () => {
     type: ToastType;
   }>>([]);
 
-  const showToast = (message: string, type: ToastType = 'info') => {
+  const showToast = useCallback((message: string, type: ToastType = 'info') => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
-  };
+  }, []);
 
-  const hideToast = (id: number) => {
+  const hideToast = useCallback((id: number) => {
     setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
+  }, []);
+
+  const showSuccess = useCallback((message: string) => showToast(message, 'success'), [showToast]);
+  const showError = useCallback((message: string) => showToast(message, 'error'), [showToast]);
+  const showInfo = useCallback((message: string) => showToast(message, 'info'), [showToast]);
 
   return {
     toasts,
     showToast,
     hideToast,
-    showSuccess: (message: string) => showToast(message, 'success'),
-    showError: (message: string) => showToast(message, 'error'),
-    showInfo: (message: string) => showToast(message, 'info')
+    showSuccess,
+    showError,
+    showInfo
   };
 };

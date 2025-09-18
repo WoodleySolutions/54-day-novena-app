@@ -18,6 +18,11 @@ export const initGA = (): void => {
     return;
   }
 
+  // Extra safety check to prevent CSP issues
+  if (typeof window === 'undefined') {
+    return;
+  }
+
   // Create the gtag script tag
   const script = document.createElement('script');
   script.async = true;
