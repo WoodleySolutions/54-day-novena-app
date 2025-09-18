@@ -69,7 +69,7 @@ const App: React.FC = () => {
   // Prayer data
   const [rosaryStreakData, setRosaryStreakData] = useState(() => loadRosaryStreakData());
   const [activeNovenas, setActiveNovenas] = useState<ActiveNovena[]>(() => loadActiveNovenas());
-  const [serverSubscriptionStatus, setServerSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  // Remove unused state - we update local subscription directly based on server response
   
   // Subscription and Novena state
   const { hasAccess, hasSeenWelcome, startTrial, markWelcomeSeen, activatePremium, deactivatePremium } = useSubscription();
@@ -97,7 +97,6 @@ const App: React.FC = () => {
         // Check subscription status with server
         try {
           const status = await subscriptionService.checkSubscriptionStatus();
-          setServerSubscriptionStatus(status);
 
           // Update local subscription state based on server response
           if (status.hasAccess && !hasAccess) {
@@ -365,7 +364,6 @@ const App: React.FC = () => {
 
       // Check subscription status after registration
       const status = await subscriptionService.checkSubscriptionStatus();
-      setServerSubscriptionStatus(status);
 
       if (status.hasAccess) {
         activatePremium();
