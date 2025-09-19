@@ -37,6 +37,7 @@ import {
   removeNovena,
   updateNovenaIntention
 } from './utils/novenaTracking';
+import { getMysteryForDay, getCurrentPhase } from './utils/novenaCalculations';
 import { useNovenaState } from './hooks/useNovenaState';
 import { initGA, analytics } from './utils/analytics';
 import { initializeNotifications } from './utils/notifications';
@@ -146,6 +147,24 @@ const App: React.FC = () => {
       setShowPaywall(true);
       return;
     }
+
+    // Create a 54-day novena session for prayer history tracking
+    const mystery = getMysteryForDay(novenaState.currentDay);
+    const session = createRosarySession(
+      mystery,
+      '54-day-novena',
+      novenaState.intention,
+      novenaState.currentDay
+    );
+
+    setCurrentPrayerSession(session);
+
+    // Update streak data with new session
+    setRosaryStreakData(prev => ({
+      ...prev,
+      sessions: [...prev.sessions, session]
+    }));
+
     setCurrentScreen('novena');
   };
 
@@ -211,6 +230,9 @@ const App: React.FC = () => {
         setActiveNovenas(prev =>
           prev.map(n => n.id === result.novena.id ? result.novena : n)
         );
+
+        // Update rosary streak data to refresh prayer history
+        setRosaryStreakData(loadRosaryStreakData());
       }
     }
 
@@ -270,6 +292,13 @@ const App: React.FC = () => {
         journalData
       );
       setRosaryStreakData(updatedStreakData);
+
+      // If this is a 54-day novena session, mark the day as complete in novena state
+      if (currentPrayerSession.prayerType === '54-day-novena' && currentPrayerSession.currentDay) {
+        novenaState.markDayComplete(currentPrayerSession.currentDay);
+        analytics.dayCompleted(currentPrayerSession.currentDay, getCurrentPhase(currentPrayerSession.currentDay));
+      }
+
       // Only track mystery for rosary prayers, not chaplets
       if (currentPrayerSession.mystery) {
         analytics.prayerCompleted(1, currentPrayerSession.mystery);
@@ -399,6 +428,7 @@ const App: React.FC = () => {
             onContinueNovena={handleContinueNovena}
             onPrayRosary={handlePrayRosary}
             onPrayChaplet={handlePrayChaplet}
+            onSelectChaplet={handleChapletSelection}
             onContinueIndividualNovena={handleContinueIndividualNovena}
             onStartNewNovena={handleStartNewNovena}
             onRemoveNovena={handleRemoveNovena}
@@ -425,6 +455,7 @@ const App: React.FC = () => {
         {currentScreen === 'history' && (
           <PrayerHistoryScreen
             onBack={handleBackToSelection}
+            rosaryStreakData={rosaryStreakData}
           />
         )}
 

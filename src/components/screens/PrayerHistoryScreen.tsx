@@ -1,22 +1,24 @@
 import React, { useState, useMemo } from 'react';
 import { ArrowLeft, Search, Filter, Download } from 'lucide-react';
 import { HistoryCard } from '../history/HistoryCard';
-import { loadRosaryStreakData, searchSessions } from '../../utils/rosaryStreak';
+import { searchSessions } from '../../utils/rosaryStreak';
+import { RosaryStreakData } from '../../types';
 
 interface PrayerHistoryScreenProps {
   onBack: () => void;
+  rosaryStreakData: RosaryStreakData;
 }
 
 type FilterType = 'all' | '54-day-novena' | 'daily-rosary' | 'chaplet' | 'novena';
 type TimeFilter = 'all' | 'week' | 'month' | 'year';
 
-export const PrayerHistoryScreen: React.FC<PrayerHistoryScreenProps> = ({ onBack }) => {
+export const PrayerHistoryScreen: React.FC<PrayerHistoryScreenProps> = ({ onBack, rosaryStreakData }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [timeFilter, setTimeFilter] = useState<TimeFilter>('all');
   const [showFilters, setShowFilters] = useState(false);
 
-  const streakData = loadRosaryStreakData();
+  const streakData = rosaryStreakData;
 
   // Filter sessions based on current filters
   const filteredSessions = useMemo(() => {
